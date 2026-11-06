@@ -1,0 +1,81 @@
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: 8px;
+  z-index: 100000;
+  transform: translateY(-150%);
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--teal-dark);
+  color: #fff;
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+body.admin-bar .site-header {
+  top: 32px;
+}
+
+@media screen and (max-width: 782px) {
+  body.admin-bar .site-header {
+    top: 46px;
+  }
+}
+
+body.admin-bar .menu-lightbox {
+  z-index: 100001;
+}
+
+.page-hero-copy h1 em,
+.section-heading h2 em,
+.home-location-copy h2 em,
+.story-copy h2 em,
+.gallery-heading h2 em,
+.visit-content h2 em,
+.order-strip h2 em,
+.kitchen-film-copy h2 em,
+.menu-pdf-page-heading h2 em,
+.gallery-intro h2 em,
+.story-editorial-copy h2 em,
+.story-timeline-heading h2 em,
+.values-section h2 em,
+.visit-card h2 em,
+.visit-help h2 em,
+.page-order-banner h2 em,
+.gallery-film-copy h2 em {
+  color: var(--ocean);
+  font-style: normal;
+}
+
+.visit-details .kk-address,
+.visit-card .kk-address,
+.kk-contact {
+  display: block;
+}
+
+.visit-details .kk-address,
+.visit-card .kk-address {
+  margin-top: 0.35rem;
+}
+
+.menu-preview-empty {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  color: var(--teal);
+  background: var(--sky-soft);
+  text-align: center;
+}
+
+.kk-generic-content {
+  max-width: 680px;
+  margin-top: 1.5rem;
+  line-height: 1.7;
+}
+
+.kk-generic-content > *:first-child {
+  margin-top: 0;
+}

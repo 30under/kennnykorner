@@ -1,0 +1,469 @@
+{
+  "assets": [
+    {
+      "key": "breakfast-bowl",
+      "file": "images/breakfast-bowl.jpg",
+      "alt": "Fresh avocado breakfast bowl",
+      "width": 4482,
+      "height": 2988,
+      "webp": [
+        {
+          "file": "images/optimized/breakfast-bowl-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/breakfast-bowl-960.webp",
+          "width": 960
+        },
+        {
+          "file": "images/optimized/breakfast-bowl-1600.webp",
+          "width": 1600
+        }
+      ]
+    },
+    {
+      "key": "classic-breakfast",
+      "file": "images/classic-breakfast.jpg",
+      "alt": "Classic eggs and steak breakfast",
+      "width": 4438,
+      "height": 2959,
+      "webp": [
+        {
+          "file": "images/optimized/classic-breakfast-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/classic-breakfast-960.webp",
+          "width": 960
+        },
+        {
+          "file": "images/optimized/classic-breakfast-1600.webp",
+          "width": 1600
+        }
+      ]
+    },
+    {
+      "key": "four-sisters-hut",
+      "file": "images/four-sisters-hut.jpg",
+      "alt": "The historic 4 Sisters Hut Restaurant",
+      "width": 932,
+      "height": 960,
+      "webp": [
+        {
+          "file": "images/optimized/four-sisters-hut-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/four-sisters-hut-932.webp",
+          "width": 932
+        }
+      ]
+    },
+    {
+      "key": "gallery-one",
+      "file": "images/gallery-one.jpg",
+      "alt": "Fresh breakfast from Kenny's Korner",
+      "width": 4561,
+      "height": 3041,
+      "webp": [
+        {
+          "file": "images/optimized/gallery-one-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/gallery-one-960.webp",
+          "width": 960
+        },
+        {
+          "file": "images/optimized/gallery-one-1600.webp",
+          "width": 1600
+        }
+      ]
+    },
+    {
+      "key": "gallery-two",
+      "file": "images/gallery-two.jpg",
+      "alt": "A colorful breakfast plate",
+      "width": 4608,
+      "height": 3072,
+      "webp": [
+        {
+          "file": "images/optimized/gallery-two-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/gallery-two-960.webp",
+          "width": 960
+        },
+        {
+          "file": "images/optimized/gallery-two-1600.webp",
+          "width": 1600
+        }
+      ]
+    },
+    {
+      "key": "hero-breakfast-platter",
+      "file": "images/hero-breakfast-platter.jpg",
+      "alt": "A Kenny's Korner breakfast platter with eggs, bacon, sausage, ham, and breakfast potatoes",
+      "width": 1467,
+      "height": 2200,
+      "webp": [
+        {
+          "file": "images/optimized/hero-breakfast-platter-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/hero-breakfast-platter-960.webp",
+          "width": 960
+        },
+        {
+          "file": "images/optimized/hero-breakfast-platter-1467.webp",
+          "width": 1467
+        }
+      ]
+    },
+    {
+      "key": "kennys-exterior-avenue",
+      "file": "images/kennys-exterior-avenue.jpg",
+      "alt": "Kenny's Korner exterior along the avenue",
+      "width": 3840,
+      "height": 2160,
+      "webp": [
+        {
+          "file": "images/optimized/kennys-exterior-avenue-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/kennys-exterior-avenue-960.webp",
+          "width": 960
+        },
+        {
+          "file": "images/optimized/kennys-exterior-avenue-1600.webp",
+          "width": 1600
+        }
+      ]
+    },
+    {
+      "key": "kennys-exterior-corner",
+      "file": "images/kennys-exterior-corner.jpg",
+      "alt": "Kenny's Korner corner exterior",
+      "width": 3840,
+      "height": 2160,
+      "webp": [
+        {
+          "file": "images/optimized/kennys-exterior-corner-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/kennys-exterior-corner-960.webp",
+          "width": 960
+        },
+        {
+          "file": "images/optimized/kennys-exterior-corner-1600.webp",
+          "width": 1600
+        }
+      ]
+    },
+    {
+      "key": "kennys-exterior-front",
+      "file": "images/kennys-exterior-front.jpg",
+      "alt": "The Kenny's Korner restaurant exterior with its striped awning",
+      "width": 3840,
+      "height": 2160,
+      "webp": [
+        {
+          "file": "images/optimized/kennys-exterior-front-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/kennys-exterior-front-960.webp",
+          "width": 960
+        },
+        {
+          "file": "images/optimized/kennys-exterior-front-1600.webp",
+          "width": 1600
+        }
+      ]
+    },
+    {
+      "key": "kennys-exterior-signage",
+      "file": "images/kennys-exterior-signage.jpg",
+      "alt": "Kenny's Korner exterior signage",
+      "width": 3840,
+      "height": 2160,
+      "webp": [
+        {
+          "file": "images/optimized/kennys-exterior-signage-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/kennys-exterior-signage-960.webp",
+          "width": 960
+        },
+        {
+          "file": "images/optimized/kennys-exterior-signage-1600.webp",
+          "width": 1600
+        }
+      ]
+    },
+    {
+      "key": "kennys-exterior-street",
+      "file": "images/kennys-exterior-street.jpg",
+      "alt": "Kenny's Korner street exterior",
+      "width": 3840,
+      "height": 2160,
+      "webp": [
+        {
+          "file": "images/optimized/kennys-exterior-street-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/kennys-exterior-street-960.webp",
+          "width": 960
+        },
+        {
+          "file": "images/optimized/kennys-exterior-street-1600.webp",
+          "width": 1600
+        }
+      ]
+    },
+    {
+      "key": "kennys-exterior-wide",
+      "file": "images/kennys-exterior-wide.jpg",
+      "alt": "Wide view of the Kenny's Korner exterior",
+      "width": 3840,
+      "height": 2160,
+      "webp": [
+        {
+          "file": "images/optimized/kennys-exterior-wide-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/kennys-exterior-wide-960.webp",
+          "width": 960
+        },
+        {
+          "file": "images/optimized/kennys-exterior-wide-1600.webp",
+          "width": 1600
+        }
+      ]
+    },
+    {
+      "key": "kennys-korner-logo",
+      "file": "images/kennys-korner-logo.jpg",
+      "alt": "Kenny's Korner mascot",
+      "width": 2481,
+      "height": 2481,
+      "webp": [
+        {
+          "file": "images/optimized/kennys-korner-logo-160.webp",
+          "width": 160
+        },
+        {
+          "file": "images/optimized/kennys-korner-logo-320.webp",
+          "width": 320
+        },
+        {
+          "file": "images/optimized/kennys-korner-logo-640.webp",
+          "width": 640
+        },
+        {
+          "file": "images/optimized/kennys-korner-logo-1280.webp",
+          "width": 1280
+        }
+      ]
+    },
+    {
+      "key": "steak-and-eggs",
+      "file": "images/steak-and-eggs.jpg",
+      "alt": "Steak and eggs breakfast plate",
+      "width": 4608,
+      "height": 3072,
+      "webp": [
+        {
+          "file": "images/optimized/steak-and-eggs-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/steak-and-eggs-960.webp",
+          "width": 960
+        },
+        {
+          "file": "images/optimized/steak-and-eggs-1600.webp",
+          "width": 1600
+        }
+      ]
+    },
+    {
+      "key": "waffle-coffee",
+      "file": "images/waffle-coffee.jpg",
+      "alt": "Waffle breakfast and coffee",
+      "width": 4379,
+      "height": 2919,
+      "webp": [
+        {
+          "file": "images/optimized/waffle-coffee-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/waffle-coffee-960.webp",
+          "width": 960
+        },
+        {
+          "file": "images/optimized/waffle-coffee-1600.webp",
+          "width": 1600
+        }
+      ]
+    },
+    {
+      "key": "waffle-cut",
+      "file": "images/waffle-cut.jpg",
+      "alt": "A waffle breakfast being enjoyed",
+      "width": 4401,
+      "height": 2934,
+      "webp": [
+        {
+          "file": "images/optimized/waffle-cut-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/waffle-cut-960.webp",
+          "width": 960
+        },
+        {
+          "file": "images/optimized/waffle-cut-1600.webp",
+          "width": 1600
+        }
+      ]
+    },
+    {
+      "key": "waffle-syrup",
+      "file": "images/waffle-syrup.jpg",
+      "alt": "Waffle sandwich with syrup",
+      "width": 4608,
+      "height": 3072,
+      "webp": [
+        {
+          "file": "images/optimized/waffle-syrup-480.webp",
+          "width": 480
+        },
+        {
+          "file": "images/optimized/waffle-syrup-960.webp",
+          "width": 960
+        },
+        {
+          "file": "images/optimized/waffle-syrup-1600.webp",
+          "width": 1600
+        }
+      ]
+    },
+    {
+      "key": "menu-pdf",
+      "file": "menu/kennys-korner-official-menu.pdf",
+      "alt": "Kenny's Korner official menu",
+      "webp": []
+    },
+    {
+      "key": "menu-page-1-600",
+      "file": "menu/preview/page-1-600.webp",
+      "alt": "Kenny's Korner menu page 1",
+      "width": 600,
+      "height": 3112,
+      "webp": []
+    },
+    {
+      "key": "menu-page-1-1200",
+      "file": "menu/preview/page-1-1200.webp",
+      "alt": "Kenny's Korner menu page 1",
+      "width": 1200,
+      "height": 3112,
+      "webp": []
+    },
+    {
+      "key": "menu-page-1-2200",
+      "file": "menu/preview/page-1-2200.webp",
+      "alt": "Kenny's Korner menu page 1",
+      "width": 2200,
+      "height": 3112,
+      "webp": []
+    },
+    {
+      "key": "menu-page-2-600",
+      "file": "menu/preview/page-2-600.webp",
+      "alt": "Kenny's Korner menu page 2",
+      "width": 600,
+      "height": 3111,
+      "webp": []
+    },
+    {
+      "key": "menu-page-2-1200",
+      "file": "menu/preview/page-2-1200.webp",
+      "alt": "Kenny's Korner menu page 2",
+      "width": 1200,
+      "height": 3111,
+      "webp": []
+    },
+    {
+      "key": "menu-page-2-2200",
+      "file": "menu/preview/page-2-2200.webp",
+      "alt": "Kenny's Korner menu page 2",
+      "width": 2200,
+      "height": 3111,
+      "webp": []
+    },
+    {
+      "key": "menu-page-3-600",
+      "file": "menu/preview/page-3-600.webp",
+      "alt": "Kenny's Korner menu page 3",
+      "width": 600,
+      "height": 3112,
+      "webp": []
+    },
+    {
+      "key": "menu-page-3-1200",
+      "file": "menu/preview/page-3-1200.webp",
+      "alt": "Kenny's Korner menu page 3",
+      "width": 1200,
+      "height": 3112,
+      "webp": []
+    },
+    {
+      "key": "menu-page-3-2200",
+      "file": "menu/preview/page-3-2200.webp",
+      "alt": "Kenny's Korner menu page 3",
+      "width": 2200,
+      "height": 3112,
+      "webp": []
+    },
+    {
+      "key": "menu-page-4-600",
+      "file": "menu/preview/page-4-600.webp",
+      "alt": "Kenny's Korner menu page 4",
+      "width": 600,
+      "height": 3111,
+      "webp": []
+    },
+    {
+      "key": "menu-page-4-1200",
+      "file": "menu/preview/page-4-1200.webp",
+      "alt": "Kenny's Korner menu page 4",
+      "width": 1200,
+      "height": 3111,
+      "webp": []
+    },
+    {
+      "key": "menu-page-4-2200",
+      "file": "menu/preview/page-4-2200.webp",
+      "alt": "Kenny's Korner menu page 4",
+      "width": 2200,
+      "height": 3111,
+      "webp": []
+    },
+    {
+      "key": "behind-the-griddle",
+      "file": "videos/behind-the-griddle.mp4",
+      "alt": "Behind the griddle at Kenny's Korner",
+      "webp": []
+    }
+  ]
+}

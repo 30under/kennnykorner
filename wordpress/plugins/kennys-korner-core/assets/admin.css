@@ -1,0 +1,143 @@
+.kk-wrap {
+  max-width: 1080px;
+}
+
+.kk-intro {
+  max-width: 760px;
+  font-size: 14px;
+}
+
+.kk-card {
+  margin: 16px 0 24px;
+  padding: 8px 20px 20px;
+  background: #fff;
+  border: 1px solid #dcdcde;
+  border-radius: 8px;
+}
+
+.kk-card h2 {
+  margin-bottom: 8px;
+}
+
+.kk-field,
+.kk-link {
+  margin: 14px 0;
+}
+
+.kk-field label,
+.kk-alt {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-weight: 600;
+}
+
+.kk-field input[type="text"],
+.kk-field input[type="number"],
+.kk-field input[type="url"],
+.kk-field textarea,
+.kk-field select,
+.kk-alt input,
+.kk-headline-row input {
+  max-width: 720px;
+  font-weight: 400;
+}
+
+.kk-check {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.kk-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.kk-repeater-item {
+  margin: 0 0 12px;
+  padding: 12px;
+  background: #f6f7f7;
+  border: 1px solid #dcdcde;
+  border-radius: 6px;
+}
+
+.kk-repeater-bar,
+.kk-headline-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 10px;
+}
+
+.kk-repeater-bar {
+  margin-bottom: 8px;
+}
+
+.kk-drag {
+  width: 36px;
+  height: 36px;
+  cursor: grab;
+}
+
+.kk-media {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 8px 12px;
+  align-items: center;
+  max-width: 720px;
+}
+
+.kk-media-preview {
+  grid-row: span 3;
+  width: 96px;
+  min-height: 72px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #f0f0f1;
+  border: 1px solid #dcdcde;
+  border-radius: 4px;
+}
+
+.kk-media-preview img {
+  width: 100%;
+  height: 96px;
+  object-fit: cover;
+}
+
+.kk-media-empty {
+  padding: 8px;
+  color: #646970;
+  font-size: 12px;
+  text-align: center;
+}
+
+.kk-submit {
+  position: sticky;
+  bottom: 0;
+  margin: 0 -20px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1px solid #dcdcde;
+}
+
+.kk-log {
+  max-height: 320px;
+  overflow: auto;
+  white-space: pre-wrap;
+  padding: 12px;
+  background: #1d2327;
+  color: #f0f0f1;
+  border-radius: 6px;
+}
+
+.kk-placeholder {
+  height: 48px;
+  margin-bottom: 12px;
+  border: 1px dashed #2271b1;
+  background: #f0f6fc;
+}

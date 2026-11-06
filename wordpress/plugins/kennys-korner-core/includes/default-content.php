@@ -1,0 +1,398 @@
+<?php
+/**
+ * Demo content manifest. Asset keys are resolved to media library IDs after import.
+ * Historical copy, hours, and the map link are taken from the demo and still need
+ * the restaurant to confirm them. Empty contact fields are intentional.
+ */
+return [
+    'schema_version' => 1,
+    'header' => [
+        'logo' => ['id' => 0, 'asset' => 'kennys-korner-logo', 'alt' => ''],
+        'brand_text' => "Kenny's",
+        'brand_accent' => 'Korner',
+        'brand_aria' => "Kenny's Korner home",
+        'order_label' => 'Order online',
+        'order_mobile_label' => 'Online ordering',
+    ],
+    'footer' => [
+        'lead' => 'Fresh-made breakfast & lunch',
+        'append_hours' => true,
+        'tagline' => 'Good food. Good mood.',
+        'copyright_name' => "Kenny's Korner",
+    ],
+    'general' => [
+        'ordering_url' => 'https://order.toasttab.com/online/kennys-korner-restaurant-kennys-korner-restaurant',
+        'hours_open_label' => 'Open daily',
+        'hours_daily_label' => 'Daily',
+        'hours_days_label' => 'Monday—Sunday',
+        'hours_time' => '7:00 AM—2:00 PM',
+        'hours_caption' => 'Hours',
+        'hours_note' => 'Holiday hours may vary. Check with the restaurant before your visit.',
+        'location_caption' => 'Location',
+        'location_summary' => "Find Kenny's Korner near you",
+        'address' => '',
+        'phone' => '',
+        'email' => '',
+        'directions_url' => "https://www.google.com/maps/search/?api=1&query=Kenny%27s+Korner",
+        'instagram_url' => '#gallery',
+        'instagram_label' => 'Follow along',
+        'instagram_aria' => "See more from Kenny's Korner",
+        'video' => ['id' => 0, 'asset' => 'behind-the-griddle'],
+        'video_url' => '',
+        'video_poster' => ['id' => 0, 'asset' => 'gallery-one', 'alt' => ''],
+        'order_kicker' => 'Hungry already?',
+        'order_title' => [
+            ['before' => 'Your favorites are just a few clicks away.', 'accent' => '', 'after' => ''],
+        ],
+        'order_button_label' => 'Order online',
+        'not_found_eyebrow' => '404 · Wrong turn',
+        'not_found_title' => 'This is not the Korner you were looking for.',
+        'not_found_cta' => 'Back to homepage →',
+        'not_found_image' => ['id' => 0, 'asset' => 'kennys-korner-logo', 'alt' => ''],
+    ],
+    'pages' => [
+        'home' => [
+            'title' => 'Home',
+            'slug' => 'home',
+            'template' => 'page-templates/home.php',
+            'sections' => [
+                'hero' => [
+                    'eyebrow' => 'Your neighborhood breakfast spot',
+                    'headline' => [
+                        ['before' => 'Good mornings', 'accent' => '', 'after' => ''],
+                        ['before' => 'start ', 'accent' => 'here.', 'after' => ''],
+                    ],
+                    'description' => 'Classic breakfast, fresh coffee, and friendly faces. Serving our community since 1990.',
+                    'image' => [
+                        'id' => 0,
+                        'asset' => 'hero-breakfast-platter',
+                        'alt' => "A Kenny's Korner breakfast platter with eggs, bacon, sausage, ham, and breakfast potatoes",
+                    ],
+                    'logo' => ['id' => 0, 'asset' => 'kennys-korner-logo', 'alt' => "Kenny's Korner mascot"],
+                    'fresh_note' => 'Breakfast & lunch · Made fresh daily',
+                    'sunburst_line_1' => 'Fresh',
+                    'sunburst_line_2' => 'every day',
+                    'actions' => [
+                        ['_id' => 'hero-menu', 'label' => 'View menu', 'preset' => 'custom', 'url' => '#menu', 'new_tab' => false, 'style' => 'primary', 'icon' => 'none'],
+                        ['_id' => 'hero-directions', 'label' => 'Get directions', 'preset' => 'directions', 'url' => '', 'new_tab' => true, 'style' => 'secondary', 'icon' => 'pin'],
+                        ['_id' => 'hero-order', 'label' => 'Online ordering', 'preset' => 'ordering', 'url' => '', 'new_tab' => true, 'style' => 'secondary', 'icon' => 'bag'],
+                    ],
+                ],
+                'location' => [
+                    'image' => [
+                        'id' => 0,
+                        'asset' => 'kennys-exterior-front',
+                        'alt' => "The Kenny's Korner restaurant exterior with its striped awning",
+                    ],
+                    'stamp_line_1' => 'Right around',
+                    'stamp_line_2' => 'the Korner',
+                    'eyebrow' => 'Look for the striped awning',
+                    'title' => [
+                        ['before' => 'Your neighborhood breakfast spot.', 'accent' => '', 'after' => ''],
+                    ],
+                    'description' => "The sunny corner building is part of the Kenny's experience. Come by for a fresh breakfast, an easy lunch, and a familiar welcome.",
+                    'cta' => ['label' => 'Get directions', 'preset' => 'directions', 'url' => '', 'new_tab' => true, 'style' => 'secondary', 'icon' => 'none'],
+                ],
+                'quick_actions' => [
+                    'items' => [
+                        ['_id' => 'quick-menu', 'title' => 'Explore our menu', 'text' => 'Breakfast, lunch & favorites', 'preset' => 'custom', 'url' => '#menu', 'new_tab' => false, 'icon' => 'arrow'],
+                        ['_id' => 'quick-directions', 'title' => 'Find your way', 'text' => 'Directions in one tap', 'preset' => 'directions', 'url' => '', 'new_tab' => true, 'icon' => 'pin'],
+                        ['_id' => 'quick-order', 'title' => 'Online ordering', 'text' => 'Easy pickup through Toast', 'preset' => 'ordering', 'url' => '', 'new_tab' => true, 'icon' => 'arrow'],
+                    ],
+                ],
+                'menu' => [
+                    'eyebrow' => 'From our kitchen',
+                    'title' => [
+                        ['before' => 'Find your new favorite.', 'accent' => '', 'after' => ''],
+                    ],
+                    'description' => 'Classic comfort, fresh ingredients, and plates made to brighten your day.',
+                ],
+                'kitchen' => [
+                    'eyebrow' => 'Behind the griddle',
+                    'title' => [
+                        ['before' => 'Real food. Real heat. Made right here.', 'accent' => '', 'after' => ''],
+                    ],
+                    'description' => 'A quick look at the color, sizzle, and care that goes into every plate before it reaches your table.',
+                    'link_label' => 'See more from our kitchen',
+                    'link_preset' => 'gallery',
+                    'video_label' => "A dish being prepared in the Kenny's Korner kitchen",
+                    'badge' => 'Made fresh',
+                ],
+                'story' => [
+                    'image_main' => ['id' => 0, 'asset' => 'steak-and-eggs', 'alt' => 'Steak and eggs breakfast plate'],
+                    'image_small' => ['id' => 0, 'asset' => 'waffle-cut', 'alt' => 'A waffle breakfast being enjoyed'],
+                    'stamp_line_1' => 'Made',
+                    'stamp_line_2' => 'with heart',
+                    'eyebrow' => 'Welcome to the Korner',
+                    'title' => [
+                        ['before' => 'A little coastal, a lot of comfort.', 'accent' => '', 'after' => ''],
+                    ],
+                    'body' => "Kenny's Korner is the kind of place where breakfast feels easy and everybody belongs. We make the classics you know, add our own sunny spin, and serve it all with genuine hospitality.\n\nWhether you're a regular or just passing through, there's always a seat—and something delicious—waiting for you.",
+                    'link_label' => 'Our story',
+                    'link_preset' => 'story',
+                ],
+                'gallery' => [
+                    'eyebrow' => 'Fresh from the griddle',
+                    'title' => [
+                        ['before' => 'Made to make your day.', 'accent' => '', 'after' => ''],
+                    ],
+                    'images' => [
+                        ['_id' => 'home-gallery-1', 'image' => ['id' => 0, 'asset' => 'gallery-one', 'alt' => "Fresh breakfast from Kenny's Korner"]],
+                        ['_id' => 'home-gallery-2', 'image' => ['id' => 0, 'asset' => 'gallery-two', 'alt' => 'A house favorite breakfast plate']],
+                        ['_id' => 'home-gallery-3', 'image' => ['id' => 0, 'asset' => 'waffle-syrup', 'alt' => 'Waffle sandwich with syrup']],
+                    ],
+                ],
+                'visit' => [
+                    'eyebrow' => 'Come say hello',
+                    'title' => [
+                        ['before' => 'Your table is waiting.', 'accent' => '', 'after' => ''],
+                    ],
+                    'description' => 'Breakfast and lunch made fresh, seven days a week.',
+                    'cta_label' => 'Get directions',
+                    'image' => ['id' => 0, 'asset' => 'waffle-coffee', 'alt' => 'Breakfast and coffee ready to enjoy'],
+                ],
+                'order' => [
+                    'kicker' => "Craving Kenny's?",
+                    'title' => [
+                        ['before' => 'Skip the wait. Order ahead.', 'accent' => '', 'after' => ''],
+                    ],
+                    'button_label' => 'Order online',
+                ],
+            ],
+        ],
+        'menu' => [
+            'title' => 'Menu',
+            'slug' => 'menu',
+            'template' => 'page-templates/menu.php',
+            'sections' => [
+                'hero' => [
+                    'eyebrow' => 'Breakfast & lunch',
+                    'headline' => [
+                        ['before' => 'Good food, made from scratch.', 'accent' => '', 'after' => ''],
+                    ],
+                    'description' => 'Familiar favorites, fresh ingredients, and a little coastal sunshine on every plate.',
+                    'image' => ['id' => 0, 'asset' => 'waffle-syrup', 'alt' => ''],
+                    'badge' => 'Fresh daily',
+                ],
+                'menu' => [
+                    'eyebrow' => 'Official menu',
+                    'title' => [
+                        ['before' => 'Find your new favorite.', 'accent' => '', 'after' => ''],
+                    ],
+                    'description' => 'Classic comfort, fresh ingredients, and plates made to brighten your day.',
+                    'pdf' => ['id' => 0, 'asset' => 'menu-pdf'],
+                    'pages' => [
+                        [
+                            '_id' => 'menu-page-1',
+                            'label' => 'Page 1',
+                            'alt' => "Official Kenny's Korner menu cover",
+                            'width' => 2200,
+                            'height' => 3112,
+                            'small' => ['id' => 0, 'asset' => 'menu-page-1-600'],
+                            'medium' => ['id' => 0, 'asset' => 'menu-page-1-1200'],
+                            'large' => ['id' => 0, 'asset' => 'menu-page-1-2200'],
+                        ],
+                        [
+                            '_id' => 'menu-page-2',
+                            'label' => 'Page 2',
+                            'alt' => "Official Kenny's Korner breakfast menu, page one",
+                            'width' => 2200,
+                            'height' => 3111,
+                            'small' => ['id' => 0, 'asset' => 'menu-page-2-600'],
+                            'medium' => ['id' => 0, 'asset' => 'menu-page-2-1200'],
+                            'large' => ['id' => 0, 'asset' => 'menu-page-2-2200'],
+                        ],
+                        [
+                            '_id' => 'menu-page-3',
+                            'label' => 'Page 3',
+                            'alt' => "Official Kenny's Korner breakfast and kids menu, page two",
+                            'width' => 2200,
+                            'height' => 3112,
+                            'small' => ['id' => 0, 'asset' => 'menu-page-3-600'],
+                            'medium' => ['id' => 0, 'asset' => 'menu-page-3-1200'],
+                            'large' => ['id' => 0, 'asset' => 'menu-page-3-2200'],
+                        ],
+                        [
+                            '_id' => 'menu-page-4',
+                            'label' => 'Page 4',
+                            'alt' => "Official Kenny's Korner lunch menu",
+                            'width' => 2200,
+                            'height' => 3111,
+                            'small' => ['id' => 0, 'asset' => 'menu-page-4-600'],
+                            'medium' => ['id' => 0, 'asset' => 'menu-page-4-1200'],
+                            'large' => ['id' => 0, 'asset' => 'menu-page-4-2200'],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+        'gallery' => [
+            'title' => 'Gallery',
+            'slug' => 'gallery',
+            'template' => 'page-templates/gallery.php',
+            'sections' => [
+                'hero' => [
+                    'eyebrow' => "The Kenny's experience",
+                    'headline' => [
+                        ['before' => 'A feast for your eyes.', 'accent' => '', 'after' => ''],
+                    ],
+                    'description' => 'Fresh plates, sunny mornings, and a kitchen that always feels alive. Take a look around.',
+                    'image' => ['id' => 0, 'asset' => 'waffle-cut', 'alt' => ''],
+                    'badge' => 'Fresh daily',
+                ],
+                'intro' => [
+                    'eyebrow' => 'Fresh from the kitchen',
+                    'title' => [
+                        ['before' => 'Made here. Loved here.', 'accent' => '', 'after' => ''],
+                    ],
+                    'description' => 'Every plate starts with honest ingredients and ends with the kind of food you will want to come back for.',
+                ],
+                'photos' => [
+                    'caption_default' => "Made fresh at Kenny's",
+                    'images' => [
+                        ['_id' => 'gallery-waffle-coffee', 'image' => ['id' => 0, 'asset' => 'waffle-coffee', 'alt' => 'Waffle breakfast and coffee'], 'caption' => "Made fresh at Kenny's"],
+                        ['_id' => 'gallery-classic', 'image' => ['id' => 0, 'asset' => 'classic-breakfast', 'alt' => 'Classic eggs and steak breakfast'], 'caption' => "Made fresh at Kenny's"],
+                        ['_id' => 'gallery-waffle-cut', 'image' => ['id' => 0, 'asset' => 'waffle-cut', 'alt' => 'Waffle sandwich being enjoyed'], 'caption' => "Made fresh at Kenny's"],
+                        ['_id' => 'gallery-bowl', 'image' => ['id' => 0, 'asset' => 'breakfast-bowl', 'alt' => 'Fresh avocado breakfast bowl'], 'caption' => "Made fresh at Kenny's"],
+                        ['_id' => 'gallery-one', 'image' => ['id' => 0, 'asset' => 'gallery-one', 'alt' => "Fresh-made Kenny's Korner plate"], 'caption' => "Made fresh at Kenny's"],
+                        ['_id' => 'gallery-steak', 'image' => ['id' => 0, 'asset' => 'steak-and-eggs', 'alt' => 'Steak and eggs with potatoes'], 'caption' => "Made fresh at Kenny's"],
+                        ['_id' => 'gallery-syrup', 'image' => ['id' => 0, 'asset' => 'waffle-syrup', 'alt' => 'Waffle sandwich with syrup'], 'caption' => "Made fresh at Kenny's"],
+                        ['_id' => 'gallery-two', 'image' => ['id' => 0, 'asset' => 'gallery-two', 'alt' => 'A colorful breakfast plate'], 'caption' => "Made fresh at Kenny's"],
+                    ],
+                ],
+                'film' => [
+                    'eyebrow' => 'In motion',
+                    'title' => [
+                        ['before' => 'From the flame to your table.', 'accent' => '', 'after' => ''],
+                    ],
+                    'description' => 'The best part happens before the plate arrives: fresh ingredients, a hot pan, and a kitchen team that knows exactly when it is ready.',
+                    'link_label' => 'Taste it for yourself',
+                    'link_preset' => 'ordering',
+                    'video_label' => "Fresh ingredients cooking on the Kenny's Korner griddle",
+                ],
+            ],
+        ],
+        'story' => [
+            'title' => 'Our Story',
+            'slug' => 'our-story',
+            'template' => 'page-templates/story.php',
+            'sections' => [
+                'hero' => [
+                    'eyebrow' => 'Our story',
+                    'headline' => [
+                        ['before' => 'A neighborhood favorite with coastal soul.', 'accent' => '', 'after' => ''],
+                    ],
+                    'description' => "Kenny's Korner was built around a simple idea: make great food, welcome everyone, and never rush a good morning.",
+                    'image' => ['id' => 0, 'asset' => 'classic-breakfast', 'alt' => ''],
+                    'badge' => 'Fresh daily',
+                ],
+                'editorial' => [
+                    'eyebrow' => 'Pull up a chair',
+                    'title' => [
+                        ['before' => 'Comfort food feels better when it comes with a smile.', 'accent' => '', 'after' => ''],
+                    ],
+                    'body' => "We believe the best restaurants feel familiar from the moment you walk through the door. That is why our kitchen keeps things honest: scratch-made breakfasts, satisfying lunches, fresh coffee, and warm hospitality.\n\nInspired by easy coastal mornings, Kenny's is a place for regulars, travelers, families, and anyone who believes breakfast is always a good idea.",
+                    'image_main' => ['id' => 0, 'asset' => 'steak-and-eggs', 'alt' => "A hearty breakfast from Kenny's"],
+                    'image_secondary' => ['id' => 0, 'asset' => 'kennys-korner-logo', 'alt' => "Kenny's Korner mascot"],
+                ],
+                'timeline' => [
+                    'eyebrow' => 'From then to now',
+                    'title' => [
+                        ['before' => 'Good mornings, generations in the making.', 'accent' => '', 'after' => ''],
+                    ],
+                    'items' => [
+                        [
+                            '_id' => 'timeline-hut',
+                            'icon' => 'cup',
+                            'layout' => 'left',
+                            'date' => '1960s',
+                            'title' => 'The Hut',
+                            'body' => 'It all started in the 1960s as The Hut, a little breakfast spot run by four sisters who shared a love for cooking and bringing people together over a good meal.',
+                            'image' => ['id' => 0, 'asset' => 'four-sisters-hut', 'alt' => 'The historic 4 Sisters Hut Restaurant'],
+                            'caption' => 'The original 4 Sisters Hut',
+                        ],
+                        [
+                            '_id' => 'timeline-1990',
+                            'icon' => 'store',
+                            'layout' => 'right',
+                            'date' => '1990',
+                            'title' => "Kenny's Korner",
+                            'body' => "In 1990, the restaurant was renamed Kenny's Korner, but the heart of the business stayed the same — serving delicious breakfast, welcoming everyone, and being a part of the neighborhood.",
+                            'image' => ['id' => 0, 'asset' => 'kennys-exterior-front', 'alt' => "The Kenny's Korner restaurant exterior"],
+                            'caption' => 'A new name, the same warm welcome',
+                        ],
+                        [
+                            '_id' => 'timeline-today',
+                            'icon' => 'sun',
+                            'layout' => 'waves',
+                            'date' => 'Today',
+                            'title' => 'Still Serving Good Mornings',
+                            'body' => "Decades later, we're proud to continue the tradition. Whether you're a longtime regular or visiting for the first time, we're grateful to be part of your story and to keep serving the meals and moments that bring people together.",
+                            'image' => ['id' => 0, 'asset' => '', 'alt' => ''],
+                            'caption' => '',
+                        ],
+                    ],
+                ],
+                'values' => [
+                    'eyebrow' => 'What matters to us',
+                    'title' => [
+                        ['before' => 'Simple things, done right.', 'accent' => '', 'after' => ''],
+                    ],
+                    'items' => [
+                        ['_id' => 'value-fresh', 'title' => 'Made fresh', 'text' => 'Comforting plates prepared with care, every single day.'],
+                        ['_id' => 'value-easy', 'title' => 'Easygoing', 'text' => 'A sunny, welcoming place where you can settle in and stay awhile.'],
+                        ['_id' => 'value-everyone', 'title' => 'For everyone', 'text' => 'Neighbors and newcomers always have a place at our table.'],
+                    ],
+                ],
+                'quote' => [
+                    'text' => 'Good mornings, great food, and a seat for everyone.',
+                    'link_label' => 'Come visit us →',
+                    'link_preset' => 'visit',
+                ],
+            ],
+        ],
+        'visit' => [
+            'title' => 'Visit Us',
+            'slug' => 'visit',
+            'template' => 'page-templates/visit.php',
+            'sections' => [
+                'hero' => [
+                    'eyebrow' => 'Visit us',
+                    'headline' => [
+                        ['before' => 'Come hungry. Leave happy.', 'accent' => '', 'after' => ''],
+                    ],
+                    'description' => 'Whether it is your first visit or your fiftieth, we are ready to make your day a little brighter.',
+                    'image' => ['id' => 0, 'asset' => 'breakfast-bowl', 'alt' => ''],
+                    'badge' => 'Fresh daily',
+                ],
+                'hours' => [
+                    'title' => [
+                        ['before' => 'Open seven days a week.', 'accent' => '', 'after' => ''],
+                    ],
+                ],
+                'location' => [
+                    'eyebrow' => 'Find your way',
+                    'title' => [
+                        ['before' => 'Right around the Korner.', 'accent' => '', 'after' => ''],
+                    ],
+                    'description' => "Tap below for the quickest route to Kenny's Korner.",
+                    'cta_label' => 'Get directions',
+                ],
+                'photo' => [
+                    'image' => ['id' => 0, 'asset' => 'gallery-one', 'alt' => "A fresh plate at Kenny's Korner"],
+                ],
+                'plan' => [
+                    'eyebrow' => 'Plan your visit',
+                    'title' => [
+                        ['before' => 'Easy mornings start here.', 'accent' => '', 'after' => ''],
+                    ],
+                    'items' => [
+                        ['_id' => 'plan-dine', 'title' => 'Dine in', 'text' => "Pull up a chair and enjoy the full Kenny's experience."],
+                        ['_id' => 'plan-pickup', 'title' => 'Pick up', 'text' => 'Order through Toast and we will have it ready for you.'],
+                        ['_id' => 'plan-crew', 'title' => 'Bring the crew', 'text' => 'Families, friends, and hungry travelers are always welcome.'],
+                    ],
+                ],
+            ],
+        ],
+    ],
+];
