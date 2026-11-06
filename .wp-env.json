@@ -1,0 +1,8 @@
+{
+  "phpVersion": "8.2",
+  "themes": ["./wordpress/themes/kennys-korner"],
+  "plugins": ["./wordpress/plugins/kennys-korner-core"],
+  "mappings": {
+    "wp-content/uploads/kennys-korner-seed": "./public"
+  }
+}

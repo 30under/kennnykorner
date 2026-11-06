@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "format": "oxfmt"
+    "format": "oxfmt",
+    "package:wordpress": "node tools/package-wordpress.mjs",
+    "check:wordpress": "php tools/check-schema.php"
   },
   "dependencies": {
     "react": "^19.0.0",
