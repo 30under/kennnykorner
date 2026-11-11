@@ -16,12 +16,14 @@ if (!empty($footer['append_hours'])) {
 }
 $copyright = (string) ($footer['copyright_name'] ?? $footer_name);
 $phone = trim((string) ($general['phone'] ?? ''));
-$email = trim((string) ($general['email'] ?? ''));
+$email = function_exists('kk_store_email') ? kk_store_email() : '';
+$facebook = function_exists('kk_public_http_url') ? kk_public_http_url((string) ($general['facebook_url'] ?? '')) : '';
+$instagram = function_exists('kk_public_http_url') ? kk_public_http_url((string) ($general['instagram_url'] ?? '')) : '';
 ?>
   <footer>
-    <a class="footer-brand" href="<?php echo esc_url($home); ?>"><?php echo esc_html($footer_name !== '' ? $footer_name : "Kenny's Korner"); ?></a>
+    <a class="footer-brand" href="<?php echo esc_url($home); ?>"<?php echo kk_edit('footer', 'footer', false); ?>><?php echo esc_html($footer_name !== '' ? $footer_name : "Kenny's Korner"); ?></a>
     <?php if ($lead !== '') : ?>
-      <p><?php echo esc_html($lead); ?></p>
+      <p<?php echo kk_edit('footer.lead', 'footer'); ?>><?php echo esc_html($lead); ?></p>
     <?php endif; ?>
     <?php if ($phone !== '' || $email !== '') : ?>
       <p class="kk-contact">
@@ -29,10 +31,25 @@ $email = trim((string) ($general['email'] ?? ''));
           <a href="<?php echo esc_url('tel:' . preg_replace('/[^0-9+]/', '', $phone)); ?>"><?php echo esc_html($phone); ?></a>
         <?php endif; ?>
         <?php if ($email !== '') : ?>
-          <?php $mail = str_starts_with($email, 'mailto:') ? $email : 'mailto:' . $email; ?>
-          <a href="<?php echo esc_url($mail); ?>"><?php echo esc_html(str_starts_with($email, 'mailto:') ? substr($email, 7) : $email); ?></a>
+          <a class="footer-email" href="<?php echo esc_url('mailto:' . $email); ?>"><?php echo esc_html($email); ?></a>
         <?php endif; ?>
       </p>
+    <?php endif; ?>
+    <?php if ($facebook !== '' || $instagram !== '') : ?>
+      <div class="footer-social">
+        <?php if ($facebook !== '') : ?>
+          <a href="<?php echo esc_url($facebook); ?>" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <?php kk_icon('facebook'); ?>
+            <span>Facebook</span>
+          </a>
+        <?php endif; ?>
+        <?php if ($instagram !== '') : ?>
+          <a href="<?php echo esc_url($instagram); ?>" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <?php kk_icon('instagram'); ?>
+            <span>Instagram</span>
+          </a>
+        <?php endif; ?>
+      </div>
     <?php endif; ?>
     <div class="footer-links">
       <?php foreach ($links as $link) : ?>
@@ -40,9 +57,9 @@ $email = trim((string) ($general['email'] ?? ''));
       <?php endforeach; ?>
     </div>
     <div class="footer-bottom">
-      <span>© <?php echo esc_html(wp_date('Y')); ?> <?php echo esc_html($copyright !== '' ? $copyright : "Kenny's Korner"); ?></span>
+      <span<?php echo kk_edit('footer.copyright_name', 'footer'); ?>>© <?php echo esc_html(wp_date('Y')); ?> <?php echo esc_html($copyright !== '' ? $copyright : "Kenny's Korner"); ?></span>
       <?php if (!empty($footer['tagline'])) : ?>
-        <span><?php echo esc_html($footer['tagline']); ?></span>
+        <span<?php echo kk_edit('footer.tagline', 'footer'); ?>><?php echo esc_html($footer['tagline']); ?></span>
       <?php endif; ?>
     </div>
   </footer>

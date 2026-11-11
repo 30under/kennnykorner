@@ -4,7 +4,7 @@ $pages = $menu['pages'];
 ?>
 <div class="menu-preview js-menu-viewer">
   <?php if ($menu['url'] !== '') : ?>
-    <div class="menu-preview-actions">
+    <div class="menu-preview-actions"<?php echo kk_edit('menu.pdf', '', false); ?>>
       <a href="<?php echo esc_url($menu['url']); ?>" target="_blank" rel="noopener noreferrer">
         <?php kk_icon('open'); ?>
         <span>Open PDF</span>
@@ -20,8 +20,9 @@ $pages = $menu['pages'];
   <?php else : ?>
     <div class="menu-preview-grid">
       <?php foreach ($pages as $index => $page) : ?>
-        <button type="button" class="menu-preview-page" data-index="<?php echo esc_attr((string) $index); ?>" aria-label="<?php echo esc_attr('Open ' . ($page['label'] !== '' ? $page['label'] : 'menu page') . ' in full-screen viewer'); ?>">
-          <span><?php echo esc_html($page['label'] !== '' ? $page['label'] : 'Page ' . ($index + 1)); ?></span>
+        <?php $page_path = 'menu.pages#' . (($page['id'] ?? '') !== '' ? $page['id'] : (string) $index); ?>
+        <button type="button" class="menu-preview-page" data-index="<?php echo esc_attr((string) $index); ?>"<?php echo kk_edit($page_path, '', false); ?> aria-label="<?php echo esc_attr('Open ' . ($page['label'] !== '' ? $page['label'] : 'menu page') . ' in full-screen viewer'); ?>">
+          <span<?php echo kk_edit($page_path . '.label'); ?>><?php echo esc_html($page['label'] !== '' ? $page['label'] : 'Page ' . ($index + 1)); ?></span>
           <img
             src="<?php echo esc_url($page['src']); ?>"
             <?php if ($page['srcset'] !== '') : ?>srcset="<?php echo esc_attr($page['srcset']); ?>" sizes="(max-width: 900px) calc(100vw - 48px), 44vw"<?php endif; ?>

@@ -2,10 +2,11 @@
 /**
  * Demo content manifest. Asset keys are resolved to media library IDs after import.
  * Historical copy, hours, and the map link are taken from the demo and still need
- * the restaurant to confirm them. Empty contact fields are intentional.
+ * the restaurant to confirm them. Address and phone stay empty. Email and the
+ * social profile URLs are the restaurant's confirmed contact details.
  */
 return [
-    'schema_version' => 1,
+    'schema_version' => 2,
     'header' => [
         'logo' => ['id' => 0, 'asset' => 'kennys-korner-logo', 'alt' => ''],
         'brand_text' => "Kenny's",
@@ -32,11 +33,12 @@ return [
         'location_summary' => "Find Kenny's Korner near you",
         'address' => '',
         'phone' => '',
-        'email' => '',
+        'email' => 'Hfamilycorp@gmail.com',
         'directions_url' => "https://www.google.com/maps/search/?api=1&query=Kenny%27s+Korner",
-        'instagram_url' => '#gallery',
+        'instagram_url' => 'https://www.instagram.com/kenny_korner',
         'instagram_label' => 'Follow along',
         'instagram_aria' => "See more from Kenny's Korner",
+        'facebook_url' => 'https://www.facebook.com/KennysKornerRestaurant',
         'video' => ['id' => 0, 'asset' => 'behind-the-griddle'],
         'video_url' => '',
         'video_poster' => ['id' => 0, 'asset' => 'gallery-one', 'alt' => ''],
@@ -260,6 +262,13 @@ return [
                         ['_id' => 'gallery-two', 'image' => ['id' => 0, 'asset' => 'gallery-two', 'alt' => 'A colorful breakfast plate'], 'caption' => "Made fresh at Kenny's"],
                     ],
                 ],
+                'videos' => [
+                    'eyebrow' => 'Watch',
+                    'title' => [
+                        ['before' => 'A few moments from the kitchen.', 'accent' => '', 'after' => ''],
+                    ],
+                    'items' => [],
+                ],
                 'film' => [
                     'eyebrow' => 'In motion',
                     'title' => [
@@ -310,6 +319,9 @@ return [
                             'body' => 'It all started in the 1960s as The Hut, a little breakfast spot run by four sisters who shared a love for cooking and bringing people together over a good meal.',
                             'image' => ['id' => 0, 'asset' => 'four-sisters-hut', 'alt' => 'The historic 4 Sisters Hut Restaurant'],
                             'caption' => 'The original 4 Sisters Hut',
+                            'video' => ['id' => 0, 'asset' => ''],
+                            'video_url' => '',
+                            'poster' => ['id' => 0, 'asset' => '', 'alt' => ''],
                         ],
                         [
                             '_id' => 'timeline-1990',
@@ -320,6 +332,9 @@ return [
                             'body' => "In 1990, the restaurant was renamed Kenny's Korner, but the heart of the business stayed the same — serving delicious breakfast, welcoming everyone, and being a part of the neighborhood.",
                             'image' => ['id' => 0, 'asset' => 'kennys-exterior-front', 'alt' => "The Kenny's Korner restaurant exterior"],
                             'caption' => 'A new name, the same warm welcome',
+                            'video' => ['id' => 0, 'asset' => ''],
+                            'video_url' => '',
+                            'poster' => ['id' => 0, 'asset' => '', 'alt' => ''],
                         ],
                         [
                             '_id' => 'timeline-today',
@@ -330,6 +345,9 @@ return [
                             'body' => "Decades later, we're proud to continue the tradition. Whether you're a longtime regular or visiting for the first time, we're grateful to be part of your story and to keep serving the meals and moments that bring people together.",
                             'image' => ['id' => 0, 'asset' => '', 'alt' => ''],
                             'caption' => '',
+                            'video' => ['id' => 0, 'asset' => ''],
+                            'video_url' => '',
+                            'poster' => ['id' => 0, 'asset' => '', 'alt' => ''],
                         ],
                     ],
                 ],
@@ -394,5 +412,56 @@ return [
                 ],
             ],
         ],
-    ],
+        'catering' => [
+                'slug' => 'catering',
+                'title' => 'Catering',
+                'template' => 'page-templates/catering.php',
+                'sections' => [
+                    'hero' => [
+                        'eyebrow' => 'Catering',
+                        'headline' => [
+                            ['before' => 'Food for the whole table.', 'accent' => '', 'after' => ''],
+                        ],
+                        'description' => 'Tell us about the gathering and we will help you put breakfast, lunch, or a spread together.',
+                        'image' => ['id' => 0, 'asset' => '', 'alt' => ''],
+                        'badge' => '',
+                    ],
+                    'services' => [
+                        'eyebrow' => 'How it works',
+                        'title' => [
+                            ['before' => 'A spread for your group.', 'accent' => '', 'after' => ''],
+                        ],
+                        'items' => [
+                            [
+                                '_id' => 'catering-spread',
+                                'title' => 'Breakfast and lunch spreads',
+                                'text' => 'Share the menu favorites with a group, from the morning rush to an afternoon meeting.',
+                                'image' => ['id' => 0, 'asset' => '', 'alt' => ''],
+                            ],
+                            [
+                                '_id' => 'catering-count',
+                                'title' => 'Office and family orders',
+                                'text' => 'Pick a time and a headcount. We will confirm what we can prepare.',
+                                'image' => ['id' => 0, 'asset' => '', 'alt' => ''],
+                            ],
+                            [
+                                '_id' => 'catering-details',
+                                'title' => 'You tell us the details',
+                                'text' => 'The date, place, and any notes help us reply with the right next step.',
+                                'image' => ['id' => 0, 'asset' => '', 'alt' => ''],
+                            ],
+                        ],
+                    ],
+                    'request' => [
+                        'eyebrow' => 'Request',
+                        'title' => [
+                            ['before' => 'Send the details.', 'accent' => '', 'after' => ''],
+                        ],
+                        'description' => 'Share the date, guest count, and where the food should go. We reply by email.',
+                        'home_label' => 'Catering',
+                        'button_label' => 'Send request',
+                    ],
+                ],
+            ],
+        ],
 ];

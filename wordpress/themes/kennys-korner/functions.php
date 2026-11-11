@@ -52,7 +52,15 @@ add_action('admin_notices', function () {
     if (!is_admin() || function_exists('kk_page')) {
         return;
     }
-    echo '<div class="notice notice-warning"><p>Kenny\'s Korner theme needs the Kenny\'s Korner Core plugin to be active.</p></div>';
+    $plugins = admin_url('plugin-install.php?tab=upload');
+    echo '<div class="notice notice-warning"><p><strong>Kenny\'s Korner Core is not active.</strong> The theme stays up without it, but restaurant pages have no content until the plugin is installed. Upload <code>kennys-korner-core.zip</code> on <a href="' . esc_url($plugins) . '">Plugins → Add New → Upload Plugin</a>, activate it, then open Kenny\'s Korner → Setup to import the demo. Do not import from the theme alone.</p></div>';
+});
+
+add_action('wp_body_open', function () {
+    if (function_exists('kk_page') || !current_user_can('manage_options')) {
+        return;
+    }
+    echo '<p class="kk-plugin-missing">Kenny\'s Korner Core is not active. Visitors see this shell without restaurant content. Install and activate the plugin, then run Setup.</p>';
 });
 
 add_filter('template_include', function ($template) {
@@ -66,6 +74,7 @@ add_filter('template_include', function ($template) {
         'gallery' => 'page-templates/gallery.php',
         'story' => 'page-templates/story.php',
         'visit' => 'page-templates/visit.php',
+        'catering' => 'page-templates/catering.php',
     ];
     if ($key === 'home' && is_front_page()) {
         return $template;

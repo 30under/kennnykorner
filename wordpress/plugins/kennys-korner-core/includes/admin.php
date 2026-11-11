@@ -10,6 +10,19 @@ final class KK_Admin {
         add_action('manage_pages_custom_column', [self::class, 'page_column_value'], 10, 2);
         add_filter('document_title_parts', [self::class, 'preview_title']);
         add_action('wp_head', [self::class, 'meta_description']);
+        add_action('wp_ajax_kk_stage_preview', [self::class, 'stage_preview']);
+        add_action('wp_enqueue_scripts', [self::class, 'preview_assets']);
+        add_filter('show_admin_bar', [self::class, 'hide_admin_bar_in_preview'], 1000);
+        add_filter('body_class', [self::class, 'preview_body_class']);
+        add_filter('admin_body_class', [self::class, 'editor_body_class']);
+        add_filter('redirect_canonical', [self::class, 'keep_preview_query'], 10, 2);
+    }
+
+    public static function keep_preview_query($redirect_url, $requested_url) {
+        if (!empty($_GET['kk_live']) || !empty($_GET['kk_preview'])) {
+            return false;
+        }
+        return $redirect_url;
     }
 
     public static function menu(): void {
@@ -31,10 +44,91 @@ final class KK_Admin {
         wp_enqueue_script('jquery-ui-sortable');
         wp_enqueue_style('kk-admin', KK_CORE_URL . 'assets/admin.css', [], KK_CORE_VERSION);
         wp_enqueue_script('kk-admin', KK_CORE_URL . 'assets/admin.js', ['jquery', 'jquery-ui-sortable'], KK_CORE_VERSION, true);
-        wp_localize_script('kk-admin', 'kkAdmin', [
+        $screen_id = 'home';
+        if (preg_match('/kk-([a-z0-9-]+)$/', $hook, $matches)) {
+            $screen_id = $matches[1];
+        }
+        $config = [
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('kk_import'),
-        ]);
+            'screen' => $screen_id,
+            'stageNonce' => wp_create_nonce('kk_live_stage'),
+            'previewUrl' => $screen_id === 'setup' ? '' : self::preview_url($screen_id),
+            'menusUrl' => admin_url('nav-menus.php'),
+            'screens' => [],
+        ];
+        foreach (kk_screens() as $id => $screen) {
+            $config['screens'][$id] = $screen['menu_title'];
+        }
+        if (current_user_can('manage_options') && str_ends_with($hook, 'kk-setup')) {
+            $config['nonce'] = wp_create_nonce('kk_import');
+        }
+        wp_localize_script('kk-admin', 'kkAdmin', $config);
+    }
+
+    public static function preview_url(string $screen_id, string $view = ''): string {
+        $screen = kk_screen($screen_id);
+        $target = home_url('/');
+        if ($view === '404') {
+            $target = home_url('/kk-editor-missing-page/');
+        } elseif ($screen && ($screen['storage'] ?? '') === 'page') {
+            $page_id = kk_find_page_id($screen['key']);
+            if ($page_id) {
+                $link = get_post_status($page_id) === 'publish' ? get_permalink($page_id) : get_preview_post_link($page_id);
+                if (is_string($link) && $link !== '') {
+                    $target = $link;
+                }
+            }
+        }
+        return add_query_arg([
+            'kk_live' => '1',
+            'kk_screen' => $screen_id,
+            '_wpnonce' => wp_create_nonce('kk_live'),
+        ], $target);
+    }
+
+    public static function preview_assets(): void {
+        if (!kk_is_live_editor()) {
+            return;
+        }
+        wp_enqueue_script('kk-live-preview', KK_CORE_URL . 'assets/live-preview.js', [], KK_CORE_VERSION, true);
+    }
+
+    public static function hide_admin_bar_in_preview(bool $show): bool {
+        return kk_is_live_editor() ? false : $show;
+    }
+
+    public static function preview_body_class(array $classes): array {
+        if (kk_is_live_editor()) {
+            $classes[] = 'kk-live-editor';
+        }
+        return $classes;
+    }
+
+    public static function editor_body_class(string $classes): string {
+        $page = isset($_GET['page']) ? sanitize_key(wp_unslash($_GET['page'])) : '';
+        if (str_starts_with($page, 'kk-') && $page !== 'kk-setup') {
+            $classes .= ' kk-editor-screen';
+        }
+        return $classes;
+    }
+
+    public static function stage_preview(): void {
+        if (!current_user_can('edit_pages')) {
+            wp_send_json_error(['message' => 'You do not have permission to edit this content.'], 403);
+        }
+        check_ajax_referer('kk_live_stage', 'nonce');
+        $screen_id = isset($_POST['screen']) ? sanitize_key(wp_unslash($_POST['screen'])) : '';
+        $screen = kk_screen($screen_id);
+        if (!$screen) {
+            wp_send_json_error(['message' => 'Unknown screen.'], 400);
+        }
+        $input = isset($_POST['kk']) && is_array($_POST['kk']) ? wp_unslash($_POST['kk']) : [];
+        $result = kk_sanitize_screen($screen, $input);
+        set_transient(kk_live_transient_key($screen_id), [
+            'sections' => $result['sections'],
+            'page' => $result['page'],
+        ], HOUR_IN_SECONDS);
+        wp_send_json_success(['errors' => $result['errors']]);
     }
 
     public static function render(): void {
@@ -60,8 +154,35 @@ final class KK_Admin {
         }
         $notice = get_transient('kk_notice_' . get_current_user_id());
         delete_transient('kk_notice_' . get_current_user_id());
-        echo '<div class="wrap kk-wrap">';
+        delete_transient(kk_live_transient_key($screen_id));
+        echo '<div class="kk-studio is-preview" data-screen="' . esc_attr($screen_id) . '">';
+        echo '<form class="kk-studio-form" method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
+        wp_nonce_field('kk_save_' . $screen_id);
+        echo '<input type="hidden" name="action" value="kk_save">';
+        echo '<input type="hidden" name="screen" value="' . esc_attr($screen_id) . '">';
+        echo '<input type="hidden" name="kk_form" value="1">';
+        echo '<div class="kk-studio-bar">';
         echo '<h1>' . esc_html($screen['page_title']) . '</h1>';
+        echo '<p class="kk-studio-status" data-state="saved">Đã lưu</p>';
+        echo '<div class="kk-studio-tabs" role="tablist">';
+        echo '<button type="button" class="is-active" data-pane="preview" role="tab" aria-selected="true">Xem trước</button>';
+        echo '<button type="button" data-pane="edit" role="tab" aria-selected="false">Chỉnh sửa</button>';
+        echo '</div>';
+        echo '<div class="kk-studio-devices" role="group" aria-label="Preview width">';
+        echo '<button type="button" class="is-active" data-device="desktop">Desktop</button>';
+        echo '<button type="button" data-device="tablet">Tablet</button>';
+        echo '<button type="button" data-device="mobile">Mobile</button>';
+        echo '</div>';
+        if ($screen_id === 'general') {
+            echo '<button type="button" class="button" data-kk-view="404">Trang 404</button>';
+        }
+        echo '<button class="button button-primary" name="kk_action" value="publish">Lưu thay đổi</button>';
+        echo '</div>';
+        echo '<div class="kk-studio-body">';
+        echo '<div class="kk-studio-preview" data-pane="preview">';
+        echo '<iframe title="Xem trước website" src="' . esc_url(self::preview_url($screen_id)) . '"></iframe>';
+        echo '</div>';
+        echo '<div class="kk-studio-panel" data-pane="edit">';
         if (is_array($notice) && !empty($notice['messages'])) {
             $class = ($notice['type'] ?? '') === 'error' ? 'notice-error' : 'notice-success';
             echo '<div class="notice ' . esc_attr($class) . ' is-dismissible"><p>' . esc_html(implode(' ', $notice['messages'])) . '</p></div>';
@@ -69,22 +190,14 @@ final class KK_Admin {
         foreach ($errors as $error) {
             echo '<div class="notice notice-error"><p>' . esc_html($error) . '</p></div>';
         }
+        echo '<p class="kk-live-note" hidden></p>';
         if (!empty($screen['intro'])) {
             echo '<p class="kk-intro">' . esc_html($screen['intro']) . '</p>';
         }
+        echo '<p class="description">Bấm một tiêu đề, đoạn văn, ảnh, nút hoặc section trong bản xem trước để mở đúng nhóm trường. Thay đổi hiện ngay ở bản xem trước và chỉ công khai khi bấm Lưu thay đổi.</p>';
         self::view_links($screen);
-        echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
-        wp_nonce_field('kk_save_' . $screen_id);
-        echo '<input type="hidden" name="action" value="kk_save">';
-        echo '<input type="hidden" name="screen" value="' . esc_attr($screen_id) . '">';
-        echo '<input type="hidden" name="kk_form" value="1">';
         kk_render_screen($screen, $sections, $page_fields);
-        echo '<p class="kk-submit">';
-        echo '<button class="button button-primary button-hero" name="kk_action" value="publish">' . esc_html($screen['storage'] === 'page' ? 'Save and publish' : 'Save settings') . '</button> ';
-        if ($screen['storage'] === 'page') {
-            echo '<button class="button button-hero" name="kk_action" value="preview">Save preview</button>';
-        }
-        echo '</p></form></div>';
+        echo '</div></div></form></div>';
     }
 
     private static function sections_for_form(array $screen): array {
@@ -170,6 +283,7 @@ final class KK_Admin {
             ]);
             kk_flush_content_cache();
             kk_purge_page_caches();
+            delete_transient(kk_live_transient_key($screen_id));
             self::notice(['Saved. The live page is updated.']);
         } else {
             $flat = [];
@@ -195,6 +309,7 @@ final class KK_Admin {
                 }
             }
             kk_purge_page_caches();
+            delete_transient(kk_live_transient_key($screen_id));
             self::notice(['Saved. Shared content is updated everywhere it is used.']);
         }
         wp_safe_redirect(admin_url('admin.php?page=kk-' . $screen_id));
@@ -266,6 +381,16 @@ final class KK_Admin {
             return $parts;
         }
         $page_id = (int) get_queried_object_id();
+        $key = (string) get_post_meta($page_id, '_kk_key', true);
+        $screen_id = kk_live_screen();
+        $screen = $screen_id ? kk_screen($screen_id) : null;
+        if ($screen && ($screen['key'] ?? '') === $key) {
+            $staged = kk_live_staged($screen_id);
+            if (is_array($staged) && !empty($staged['page']['post_title'])) {
+                $parts['title'] = (string) $staged['page']['post_title'];
+                return $parts;
+            }
+        }
         if (!kk_is_preview_request($page_id)) {
             return $parts;
         }
@@ -315,12 +440,20 @@ final class KK_Admin {
         echo '<div class="kk-card"><h2>Demo media</h2>';
         echo '<p>Text imports from the plugin. Photos, the menu PDF, preview images, and the kitchen video come from the seed folder.</p>';
         echo '<p>Current folder: <code>' . esc_html($seed !== '' ? $seed : 'Not found') . '</code></p>';
-        echo '<p>If the upload is larger than the host allows, copy the seed files by SFTP to <code>wp-content/uploads/kennys-korner-seed/</code> and keep the <code>images</code>, <code>menu</code>, and <code>videos</code> folders.</p>';
+        echo '<p>Upload <code>kennys-korner-seed.zip</code> as the package script creates it. The zip contains a <code>seed</code> folder, and Setup detects that folder without moving <code>images</code>, <code>menu</code>, or <code>videos</code> up a level.</p>';
+        echo '<p>This server currently allows <code>upload_max_filesize=' . esc_html((string) ini_get('upload_max_filesize')) . '</code> and <code>post_max_size=' . esc_html((string) ini_get('post_max_size')) . '</code>. Those are the limits for this web request, not a separate CLI configuration. The seed zip is about 48 MB. ZipArchive unpacks the file only after PHP accepts the upload. If either limit is smaller, use the host File Manager or SFTP to unzip the same zip into <code>wp-content/uploads/kennys-korner-seed/</code> and leave the inner <code>seed</code> folder where the zip puts it.</p>';
         echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" enctype="multipart/form-data">';
         wp_nonce_field('kk_upload_seed');
         echo '<input type="hidden" name="action" value="kk_upload_seed">';
         echo '<input type="file" name="seed" accept=".zip,application/zip" required> ';
         echo '<button class="button">Upload seed zip</button></form></div>';
+        echo '<div class="kk-card"><h2>Confirm with the restaurant</h2>';
+        echo '<p>These are internal notes. The public site keeps the demo values below and does not invent a street address, phone, email, Instagram profile, or a different history. Hours on the website come only from General settings.</p>';
+        echo '<table class="widefat striped"><thead><tr><th>Item</th><th>Value in the demo</th><th>Why it is not confirmed</th></tr></thead><tbody>';
+        foreach (kk_unconfirmed_items() as $item) {
+            echo '<tr><td>' . esc_html($item['item']) . '</td><td>' . esc_html($item['demo']) . '</td><td>' . esc_html($item['note']) . '</td></tr>';
+        }
+        echo '</tbody></table></div>';
         echo '<div class="kk-card"><h2>Import demo content</h2>';
         echo '<p>This creates the pages, menu, and media that are missing. It does not replace content you have already saved, and it does not run by itself when the plugin is activated.</p>';
         echo '<p><label><input type="checkbox" id="kk-overwrite"> Replace Kenny\'s Korner demo content</label></p>';

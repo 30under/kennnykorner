@@ -1,5 +1,5 @@
 {
-    "schema_version": 1,
+    "schema_version": 2,
     "header": {
         "logo": {
             "id": 0,
@@ -30,11 +30,12 @@
         "location_summary": "Find Kenny's Korner near you",
         "address": "",
         "phone": "",
-        "email": "",
+        "email": "Hfamilycorp@gmail.com",
         "directions_url": "https://www.google.com/maps/search/?api=1&query=Kenny%27s+Korner",
-        "instagram_url": "#gallery",
+        "instagram_url": "https://www.instagram.com/kenny_korner",
         "instagram_label": "Follow along",
         "instagram_aria": "See more from Kenny's Korner",
+        "facebook_url": "https://www.facebook.com/KennysKornerRestaurant",
         "video": {
             "id": 0,
             "asset": "behind-the-griddle"
@@ -528,6 +529,17 @@
                         }
                     ]
                 },
+                "videos": {
+                    "eyebrow": "Watch",
+                    "title": [
+                        {
+                            "before": "A few moments from the kitchen.",
+                            "accent": "",
+                            "after": ""
+                        }
+                    ],
+                    "items": []
+                },
                 "film": {
                     "eyebrow": "In motion",
                     "title": [
@@ -609,7 +621,17 @@
                                 "asset": "four-sisters-hut",
                                 "alt": "The historic 4 Sisters Hut Restaurant"
                             },
-                            "caption": "The original 4 Sisters Hut"
+                            "caption": "The original 4 Sisters Hut",
+                            "video": {
+                                "id": 0,
+                                "asset": ""
+                            },
+                            "video_url": "",
+                            "poster": {
+                                "id": 0,
+                                "asset": "",
+                                "alt": ""
+                            }
                         },
                         {
                             "_id": "timeline-1990",
@@ -623,7 +645,17 @@
                                 "asset": "kennys-exterior-front",
                                 "alt": "The Kenny's Korner restaurant exterior"
                             },
-                            "caption": "A new name, the same warm welcome"
+                            "caption": "A new name, the same warm welcome",
+                            "video": {
+                                "id": 0,
+                                "asset": ""
+                            },
+                            "video_url": "",
+                            "poster": {
+                                "id": 0,
+                                "asset": "",
+                                "alt": ""
+                            }
                         },
                         {
                             "_id": "timeline-today",
@@ -637,7 +669,17 @@
                                 "asset": "",
                                 "alt": ""
                             },
-                            "caption": ""
+                            "caption": "",
+                            "video": {
+                                "id": 0,
+                                "asset": ""
+                            },
+                            "video_url": "",
+                            "poster": {
+                                "id": 0,
+                                "asset": "",
+                                "alt": ""
+                            }
                         }
                     ]
                 },
@@ -751,6 +793,85 @@
                             "text": "Families, friends, and hungry travelers are always welcome."
                         }
                     ]
+                }
+            }
+        },
+        "catering": {
+            "slug": "catering",
+            "title": "Catering",
+            "template": "page-templates/catering.php",
+            "sections": {
+                "hero": {
+                    "eyebrow": "Catering",
+                    "headline": [
+                        {
+                            "before": "Food for the whole table.",
+                            "accent": "",
+                            "after": ""
+                        }
+                    ],
+                    "description": "Tell us about the gathering and we will help you put breakfast, lunch, or a spread together.",
+                    "image": {
+                        "id": 0,
+                        "asset": "",
+                        "alt": ""
+                    },
+                    "badge": ""
+                },
+                "services": {
+                    "eyebrow": "How it works",
+                    "title": [
+                        {
+                            "before": "A spread for your group.",
+                            "accent": "",
+                            "after": ""
+                        }
+                    ],
+                    "items": [
+                        {
+                            "_id": "catering-spread",
+                            "title": "Breakfast and lunch spreads",
+                            "text": "Share the menu favorites with a group, from the morning rush to an afternoon meeting.",
+                            "image": {
+                                "id": 0,
+                                "asset": "",
+                                "alt": ""
+                            }
+                        },
+                        {
+                            "_id": "catering-count",
+                            "title": "Office and family orders",
+                            "text": "Pick a time and a headcount. We will confirm what we can prepare.",
+                            "image": {
+                                "id": 0,
+                                "asset": "",
+                                "alt": ""
+                            }
+                        },
+                        {
+                            "_id": "catering-details",
+                            "title": "You tell us the details",
+                            "text": "The date, place, and any notes help us reply with the right next step.",
+                            "image": {
+                                "id": 0,
+                                "asset": "",
+                                "alt": ""
+                            }
+                        }
+                    ]
+                },
+                "request": {
+                    "eyebrow": "Request",
+                    "title": [
+                        {
+                            "before": "Send the details.",
+                            "accent": "",
+                            "after": ""
+                        }
+                    ],
+                    "description": "Share the date, guest count, and where the food should go. We reply by email.",
+                    "home_label": "Catering",
+                    "button_label": "Send request"
                 }
             }
         }

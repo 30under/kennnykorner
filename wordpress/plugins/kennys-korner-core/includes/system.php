@@ -1,5 +1,35 @@
 <?php
 
+function kk_unconfirmed_items(): array {
+    return [
+        [
+            'item' => 'Hours',
+            'demo' => 'Monday—Sunday, 7:00 AM—2:00 PM',
+            'note' => 'One source: General settings. The homepage, footer, and Visit Us all read it. The printed menu PDF says 2:30 PM instead.',
+        ],
+        [
+            'item' => 'Street address',
+            'demo' => 'Empty',
+            'note' => 'The source has no street address. The field stays hidden until the restaurant provides one.',
+        ],
+        [
+            'item' => 'Phone',
+            'demo' => 'Empty',
+            'note' => 'The source has no phone number. It is hidden until filled in.',
+        ],
+        [
+            'item' => 'Directions',
+            'demo' => 'Google search for Kenny\'s Korner',
+            'note' => 'Used because no street address was in the source. Replace the URL after the address is confirmed.',
+        ],
+        [
+            'item' => 'History',
+            'demo' => 'Timeline copy from the demo: The Hut, the 1990 rename, and today',
+            'note' => 'Kept so the page matches the demo. Confirm it before treating the wording as the official history.',
+        ],
+    ];
+}
+
 function kk_system_checks(): array {
     $checks = [];
     $php = PHP_VERSION;
@@ -42,7 +72,7 @@ function kk_system_checks(): array {
     $checks[] = [
         'label' => 'Upload limit',
         'status' => $upload >= 32 * MB_IN_BYTES ? 'OK' : 'Check',
-        'detail' => size_format($upload) . '. The kitchen video is about 20 MB and the full seed zip is about 48 MB. Use SFTP if the zip is too large. Memory limit: ' . ini_get('memory_limit') . '.',
+        'detail' => 'Web request: upload_max_filesize ' . ini_get('upload_max_filesize') . ', post_max_size ' . ini_get('post_max_size') . ', effective ' . size_format($upload) . '. The seed zip is about 48 MB. ZipArchive does not raise this limit. Memory limit: ' . ini_get('memory_limit') . '.',
     ];
     $image_editor = extension_loaded('imagick') || extension_loaded('gd');
     $checks[] = [
@@ -53,7 +83,7 @@ function kk_system_checks(): array {
     $checks[] = [
         'label' => 'Zip support',
         'status' => class_exists('ZipArchive') ? 'OK' : 'Check',
-        'detail' => class_exists('ZipArchive') ? 'Zip uploads can be unpacked.' : 'ZipArchive is missing. Copy the seed folder by SFTP instead.',
+        'detail' => class_exists('ZipArchive') ? 'ZipArchive can unpack a zip this web request has already accepted. It does not raise the upload limit.' : 'ZipArchive is missing. Unzip the seed zip by SFTP and leave the inner seed folder in place.',
     ];
     $seed = kk_seed_dir();
     $checks[] = [

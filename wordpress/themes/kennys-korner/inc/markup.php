@@ -19,11 +19,31 @@ function kk_esc_href(string $url): string {
     return esc_url($url);
 }
 
-function kk_section_label(string $text, bool $light = false): void {
+function kk_edit(string $path, string $owner = '', bool $bind = true): string {
+    if ($path === '' || !function_exists('kk_is_live_editor') || !kk_is_live_editor()) {
+        return '';
+    }
+    $html = ' data-kk-edit="' . esc_attr($path) . '"';
+    if ($bind) {
+        $html .= ' data-kk-bind="' . esc_attr($path) . '"';
+    }
+    if ($owner !== '' && function_exists('kk_live_screen') && $owner !== kk_live_screen()) {
+        $html .= ' data-kk-screen="' . esc_attr($owner) . '"';
+    }
+    return $html;
+}
+
+function kk_item_path(string $base, array $item, int $index): string {
+    $raw = str_replace('_', '-', strtolower(trim((string) ($item['_id'] ?? ''))));
+    $token = preg_match('/^[a-z0-9-]+$/', $raw) ? $raw : (string) $index;
+    return $base . '#' . $token;
+}
+
+function kk_section_label(string $text, bool $light = false, string $edit = '', string $owner = ''): void {
     if (trim($text) === '') {
         return;
     }
-    echo '<p class="section-label' . ($light ? ' section-label--light' : '') . '">' . esc_html($text) . '</p>';
+    echo '<p class="section-label' . ($light ? ' section-label--light' : '') . '"' . kk_edit($edit, $owner) . '>' . esc_html($text) . '</p>';
 }
 
 function kk_headline($lines, string $tag, array $attrs = []): void {
@@ -48,7 +68,9 @@ function kk_headline($lines, string $tag, array $attrs = []): void {
     if ($rendered === []) {
         return;
     }
-    $attributes = '';
+    $edit = (string) ($attrs['edit'] ?? '');
+    $owner = (string) ($attrs['owner'] ?? '');
+    $attributes = kk_edit($edit, $owner);
     foreach ($attrs as $key => $value) {
         if (!in_array($key, ['id', 'class'], true)) {
             continue;
@@ -58,14 +80,14 @@ function kk_headline($lines, string $tag, array $attrs = []): void {
     echo '<' . $tag . $attributes . '>' . implode('<br>', $rendered) . '</' . $tag . '>';
 }
 
-function kk_paragraphs(string $text, string $class = ''): void {
+function kk_paragraphs(string $text, string $class = '', string $edit = '', string $owner = ''): void {
     $chunks = preg_split("/\n\s*\n/", trim($text)) ?: [];
     foreach ($chunks as $chunk) {
         $chunk = trim((string) $chunk);
         if ($chunk === '') {
             continue;
         }
-        echo '<p' . ($class !== '' ? ' class="' . esc_attr($class) . '"' : '') . '>' . nl2br(esc_html($chunk), false) . '</p>';
+        echo '<p' . ($class !== '' ? ' class="' . esc_attr($class) . '"' : '') . kk_edit($edit, $owner) . '>' . nl2br(esc_html($chunk), false) . '</p>';
     }
 }
 
@@ -81,7 +103,9 @@ function kk_picture($image, array $args = []): void {
     $sizes = (string) ($args['sizes'] ?? '(max-width: 900px) 100vw, 50vw');
     $class = (string) ($args['class'] ?? '');
     $loading = $priority ? 'eager' : (string) ($args['loading'] ?? 'lazy');
-    echo '<picture class="optimized-picture">';
+    $edit = (string) ($args['edit'] ?? '');
+    $owner = (string) ($args['owner'] ?? '');
+    echo '<picture class="optimized-picture"' . kk_edit($edit, $owner) . '>';
     if ($prepared['webp'] !== '') {
         echo '<source type="image/webp" sizes="' . esc_attr($sizes) . '" srcset="' . esc_attr($prepared['webp']) . '">';
     }
@@ -113,7 +137,8 @@ function kk_icon(string $name): void {
         'pin' => '<path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="2"/>',
         'clock' => '<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
         'bag' => '<path d="M5 8h14l1 13H4L5 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 9V6a3 3 0 0 1 6 0v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-        'instagram' => '<rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>',
+        'instagram' => '<rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.5 6.5h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+        'facebook' => '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
         'previous' => '<path d="m14.5 6-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
         'next' => '<path d="m9.5 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
         'minus' => '<path d="M6 12h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
@@ -138,7 +163,7 @@ function kk_timeline_icon(string $name): void {
     echo '<svg viewBox="0 0 48 48" aria-hidden="true">' . $markup . '</svg>';
 }
 
-function kk_action_link(array $link): void {
+function kk_action_link(array $link, string $edit = '', string $owner = '', string $label_edit = ''): void {
     if (!function_exists('kk_resolve_link')) {
         return;
     }
@@ -148,7 +173,7 @@ function kk_action_link(array $link): void {
         return;
     }
     $style = in_array($resolved['style'], ['primary', 'secondary', 'light'], true) ? $resolved['style'] : 'primary';
-    echo '<a class="action-link action-link--' . esc_attr($style) . '" href="' . $href . '"';
+    echo '<a class="action-link action-link--' . esc_attr($style) . '" href="' . $href . '"' . kk_edit($edit, $owner, false);
     if ($resolved['new_tab']) {
         echo ' target="_blank" rel="noopener noreferrer"';
     }
@@ -158,12 +183,13 @@ function kk_action_link(array $link): void {
         kk_icon($resolved['icon']);
         echo '</span>';
     }
-    echo '<span>' . esc_html($resolved['label']) . '</span>';
+    $label_path = $label_edit !== '' ? $label_edit : ($edit !== '' ? $edit . '.label' : '');
+    echo '<span' . kk_edit($label_path, $owner) . '>' . esc_html($resolved['label']) . '</span>';
     kk_icon('arrow');
     echo '</a>';
 }
 
-function kk_text_link(string $preset, string $label, string $url = ''): void {
+function kk_text_link(string $preset, string $label, string $url = '', string $edit = '', string $owner = ''): void {
     if (!function_exists('kk_resolve_link') || $label === '') {
         return;
     }
@@ -177,11 +203,11 @@ function kk_text_link(string $preset, string $label, string $url = ''): void {
     if ($href === '') {
         return;
     }
-    echo '<a class="text-link" href="' . $href . '"';
+    echo '<a class="text-link" href="' . $href . '"' . kk_edit($edit, $owner, false);
     if ($resolved['new_tab']) {
         echo ' target="_blank" rel="noopener noreferrer"';
     }
-    echo '>' . esc_html($label) . ' ';
+    echo '><span' . kk_edit($edit, $owner) . '>' . esc_html($label) . '</span> ';
     kk_icon('arrow');
     echo '</a>';
 }
@@ -216,6 +242,7 @@ function kk_nav_links(): array {
         'home' => 'Home',
         'menu' => 'Menu',
         'gallery' => 'Gallery',
+        'catering' => 'Catering',
         'story' => 'Our story',
         'visit' => 'Visit us',
     ];

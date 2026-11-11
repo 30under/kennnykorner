@@ -13,6 +13,7 @@ function kk_preset_options(): array {
         'gallery' => 'Gallery page',
         'story' => 'Our Story page',
         'visit' => 'Visit Us page',
+        'catering' => 'Catering page',
     ];
 }
 
@@ -106,7 +107,7 @@ function kk_page_fields(): array {
         kk_select('post_status', 'Visibility', [
             'publish' => 'Published',
             'draft' => 'Draft — hidden from visitors',
-        ], 'Draft pages are not public. Use Preview to review them while signed in.'),
+        ], 'Draft pages are not public. Review them in the preview beside this form while you are signed in.'),
         kk_textarea('meta_description', 'Meta description', 'Optional. Leave blank to omit the description tag. Do not paste the demo placeholder.'),
     ];
 }
@@ -133,6 +134,7 @@ function kk_screens(): array {
         'gallery' => kk_screen_gallery(),
         'story' => kk_screen_story(),
         'visit' => kk_screen_visit(),
+        'catering' => kk_screen_catering(),
         'header' => kk_screen_header(),
         'footer' => kk_screen_footer(),
         'general' => kk_screen_general(),
@@ -363,6 +365,22 @@ function kk_screen_gallery(): array {
                 ],
             ],
             [
+                'id' => 'videos',
+                'title' => 'Video carousel',
+                'description' => 'A separate carousel after the photo wall. The photo wall is unchanged. Leave the list empty to hide the carousel. Drag the handle to set the order.',
+                'fields' => [
+                    kk_text('eyebrow', 'Eyebrow'),
+                    kk_field_headline('title', 'Heading'),
+                    kk_repeater('items', 'Videos', [
+                        kk_file('video', 'Video file', 'video', 'MP4 or WebM. If the file is larger than the upload limit ({upload_limit}), paste a URL instead.'),
+                        kk_url('video_url', 'Video URL', 'Used when no file is selected. Must start with http:// or https://.'),
+                        kk_image('poster', 'Poster', 'Shown before play and if the video cannot load.'),
+                        kk_text('title', 'Title', 'Optional.'),
+                        kk_textarea('caption', 'Caption', 'Optional short description.'),
+                    ], 'About three or four videos fit this carousel. Drag the handle to change the order.', 8, 'Video'),
+                ],
+            ],
+            [
                 'id' => 'film',
                 'title' => 'Video section',
                 'description' => 'The video and poster come from General settings.',
@@ -410,7 +428,7 @@ function kk_screen_story(): array {
             [
                 'id' => 'timeline',
                 'title' => 'Timeline',
-                'description' => 'Confirm this history with the client. Icons and the wave panel are part of the design.',
+                'description' => 'Confirm this history with the client. Icons and the wave panel are part of the design. On the Today moment, a video replaces the waves. Leave the video empty to keep the waves.',
                 'fields' => [
                     kk_text('eyebrow', 'Eyebrow'),
                     kk_field_headline('title', 'Heading'),
@@ -428,8 +446,11 @@ function kk_screen_story(): array {
                         kk_text('date', 'Date'),
                         kk_text('title', 'Title'),
                         kk_textarea('body', 'Text'),
-                        kk_image('image', 'Photo', 'Ignored when the layout is Waves.'),
-                        kk_text('caption', 'Caption'),
+                        kk_image('image', 'Photo', 'Ignored when the layout is Waves, and hidden when a video is set.'),
+                        kk_text('caption', 'Caption', 'Shown with the photo or the video. Leave blank to hide it.'),
+                        kk_file('video', 'Video file', 'video', 'Optional. MP4 or WebM from the media library. If the file is larger than the upload limit ({upload_limit}), paste a URL instead. Leave both empty to hide the video.'),
+                        kk_url('video_url', 'Video URL', 'Used only when no video file is selected. Must start with http:// or https://.'),
+                        kk_image('poster', 'Video poster', 'Use an image. A video file selected here is moved to Video file when that field is empty.'),
                     ], '', 12, 'Moment'),
                 ],
             ],
@@ -520,6 +541,52 @@ function kk_screen_visit(): array {
     ];
 }
 
+function kk_screen_catering(): array {
+    return [
+        'id' => 'catering',
+        'menu_title' => 'Catering',
+        'page_title' => 'Catering',
+        'storage' => 'page',
+        'key' => 'catering',
+        'intro' => 'The request form sends to the restaurant email in General settings. Leave that email blank to hide it and pause the form. The homepage Catering button uses the label below.',
+        'page_fields' => kk_page_fields(),
+        'sections' => [
+            [
+                'id' => 'hero',
+                'title' => 'Page hero',
+                'description' => 'The photo is optional. Leave it empty until a catering photo is ready.',
+                'fields' => kk_hero_fields(''),
+            ],
+            [
+                'id' => 'services',
+                'title' => 'Service blocks',
+                'description' => 'Each block can have a photo. Photos stay in a 4:3 frame.',
+                'fields' => [
+                    kk_text('eyebrow', 'Eyebrow'),
+                    kk_field_headline('title', 'Heading'),
+                    kk_repeater('items', 'Blocks', [
+                        kk_text('title', 'Title'),
+                        kk_textarea('text', 'Text'),
+                        kk_image('image', 'Photo'),
+                    ], '', 8, 'Block'),
+                ],
+            ],
+            [
+                'id' => 'request',
+                'title' => 'Request',
+                'description' => 'This copy sits beside the form. The form fields themselves stay fixed.',
+                'fields' => [
+                    kk_text('eyebrow', 'Eyebrow'),
+                    kk_field_headline('title', 'Heading'),
+                    kk_textarea('description', 'Guidance'),
+                    kk_text('home_label', 'Homepage button label', 'Shown on the homepage. Leave blank to hide that button.'),
+                    kk_text('button_label', 'Submit button label'),
+                ],
+            ],
+        ],
+    ];
+}
+
 function kk_screen_header(): array {
     return [
         'id' => 'header',
@@ -600,7 +667,7 @@ function kk_screen_general(): array {
             [
                 'id' => 'hours',
                 'title' => 'Hours',
-                'description' => 'Confirm these hours with the restaurant. The demo uses the same hours everywhere.',
+                'description' => 'This is the only hours source for the website: the homepage hero, the homepage visit band, the footer, and Visit Us all read these fields. The printed menu PDF currently says 2:30 PM, which does not match the demo copy of 7:00 AM—2:00 PM. Confirm the real hours before changing them. Editing here does not change the PDF file.',
                 'fields' => [
                     kk_text('hours_open_label', 'Short label', 'Shown with the time in the hero and footer. Demo: Open daily.'),
                     kk_text('hours_daily_label', 'Daily label', 'Shown on the homepage visit band. Demo: Daily.'),
@@ -613,24 +680,25 @@ function kk_screen_general(): array {
             [
                 'id' => 'location',
                 'title' => 'Location and contact',
-                'description' => 'The demo has no street address, phone, or email. Those fields stay hidden until you fill them in.',
+                'description' => 'Street address and phone stay hidden until you fill them in. The restaurant email is shown on Visit Us and in the footer, and catering requests are sent there.',
                 'fields' => [
                     kk_text('location_caption', 'Location caption'),
                     kk_text('location_summary', 'Location line', 'Demo text: Find Kenny\'s Korner near you.'),
                     kk_textarea('address', 'Street address', 'Leave blank until the client confirms it. Not shown while empty.'),
                     kk_text('phone', 'Phone', 'Leave blank to hide it.'),
-                    kk_text('email', 'Email', 'Leave blank to hide it. Enter an email address or a mailto link.'),
+                    kk_text('email', 'Restaurant email', 'Shown on Visit Us and in the footer. Catering requests are sent here. Leave blank to hide the address and pause the form.'),
                     kk_url('directions_url', 'Directions URL', 'The demo links to a Google search for the restaurant name because no street address was in the source.'),
                 ],
             ],
             [
                 'id' => 'instagram',
-                'title' => 'Instagram link',
-                'description' => 'Shown on the homepage gallery. The demo used #gallery because no Instagram profile URL was in the source. Paste the real profile URL when you have it. Web addresses open in a new tab.',
+                'title' => 'Social links',
+                'description' => 'Footer icons appear only for a full http:// or https:// address. An empty address, or a placeholder such as #gallery, stays hidden in the footer. The homepage gallery uses the Instagram URL as entered.',
                 'fields' => [
-                    kk_url('instagram_url', 'URL', 'Use #gallery to keep the current demo behavior, or paste a full Instagram URL.'),
-                    kk_text('instagram_label', 'Label'),
-                    kk_text('instagram_aria', 'Screen reader label', 'Announced instead of the short visible label.'),
+                    kk_url('instagram_url', 'Instagram URL', 'Leave blank to hide the footer icon. A full https:// address opens in a new tab.'),
+                    kk_text('instagram_label', 'Homepage gallery label'),
+                    kk_text('instagram_aria', 'Homepage gallery screen reader label', 'Announced instead of the short visible label.'),
+                    kk_url('facebook_url', 'Facebook URL', 'Leave blank to hide the footer icon. A full https:// address opens in a new tab.'),
                 ],
             ],
             [

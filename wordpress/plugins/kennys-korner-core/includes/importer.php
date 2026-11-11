@@ -39,9 +39,27 @@ function kk_media_manifest(): array {
 
 final class KK_Importer {
     public static function init(): void {
+        add_action('admin_init', [self::class, 'reject_oversized_setup_post']);
         add_action('wp_ajax_kk_import', [self::class, 'ajax']);
         add_action('admin_post_kk_upload_seed', [self::class, 'upload_seed']);
         add_action('admin_post_kk_delete_content', [self::class, 'delete_content']);
+    }
+
+    public static function reject_oversized_setup_post(): void {
+        if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+            return;
+        }
+        $length = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0);
+        if ($length < 1 || !empty($_POST) || !empty($_FILES)) {
+            return;
+        }
+        $referer = (string) wp_get_raw_referer();
+        if (!str_contains($referer, 'page=kk-setup')) {
+            return;
+        }
+        self::redirect_notice([
+            'PHP discarded this upload before it could be saved. This web request allows upload_max_filesize ' . ini_get('upload_max_filesize') . ' and post_max_size ' . ini_get('post_max_size') . '. ZipArchive only unpacks a file that PHP has already accepted, so it cannot raise that limit. Unzip kennys-korner-seed.zip with the host File Manager or SFTP into wp-content/uploads/kennys-korner-seed/ and leave the inner seed folder in place.',
+        ], 'error');
     }
 
     public static function ajax(): void {
@@ -114,7 +132,11 @@ final class KK_Importer {
             self::remember_asset($key, $existing);
             $job['log'][] = 'Kept media ' . $key . '.';
         } else {
-            $file = $seed . '/' . ltrim((string) $asset['file'], '/');
+            $file = self::path_inside_seed($seed, (string) $asset['file']);
+            if ($file === '') {
+                $job['errors'][] = $key . ': the manifest path is outside the seed folder.';
+                return;
+            }
             $imported = self::sideload($file, (string) ($asset['alt'] ?? $key), $key);
             if (is_wp_error($imported)) {
                 $job['errors'][] = $key . ': ' . $imported->get_error_message();
@@ -138,7 +160,11 @@ final class KK_Importer {
             $child_key = $key . '-w' . $width;
             $child = self::attachment_by_key($child_key);
             if (!$child) {
-                $child_file = $seed . '/' . ltrim((string) ($webp['file'] ?? ''), '/');
+                $child_file = self::path_inside_seed($seed, (string) ($webp['file'] ?? ''));
+                if ($child_file === '') {
+                    $job['errors'][] = $child_key . ': the manifest path is outside the seed folder.';
+                    continue;
+                }
                 $child = self::sideload($child_file, $key . ' ' . $width, $child_key);
             }
             if (is_wp_error($child)) {
@@ -285,6 +311,7 @@ final class KK_Importer {
             'home' => 'Home',
             'menu' => 'Menu',
             'gallery' => 'Gallery',
+            'catering' => 'Catering',
             'story' => 'Our story',
             'visit' => 'Visit us',
         ];
@@ -331,6 +358,20 @@ final class KK_Importer {
         update_option('kk_asset_map', $map, false);
     }
 
+    private static function path_inside_seed(string $seed, string $relative): string {
+        $root = realpath($seed);
+        if ($root === false || $relative === '' || str_contains($relative, "\0")) {
+            return '';
+        }
+        $candidate = $root . '/' . ltrim(str_replace('\\', '/', $relative), '/');
+        $real = realpath($candidate);
+        $prefix = rtrim($root, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        if ($real === false || !str_starts_with($real, $prefix)) {
+            return '';
+        }
+        return $real;
+    }
+
     private static function sideload(string $path, string $title, string $key) {
         if (!is_file($path)) {
             return new WP_Error('kk_missing_file', 'Missing file ' . basename($path));
@@ -369,19 +410,77 @@ final class KK_Importer {
         if (!empty($upload['error'])) {
             self::redirect_notice([(string) $upload['error']], 'error');
         }
+        $unsafe = self::zip_rejection_reason((string) $upload['file']);
+        if ($unsafe !== '') {
+            wp_delete_file($upload['file']);
+            self::redirect_notice([$unsafe], 'error');
+        }
         $uploads = wp_upload_dir();
         $dest = trailingslashit($uploads['basedir']) . 'kennys-korner-seed';
         wp_mkdir_p($dest);
-        $unzipped = unzip_file($upload['file'], $dest);
+        $zip = new ZipArchive();
+        if ($zip->open((string) $upload['file']) !== true) {
+            wp_delete_file($upload['file']);
+            self::redirect_notice(['The file is not a readable zip archive.'], 'error');
+        }
+        $extracted = $zip->extractTo($dest);
+        $zip->close();
         wp_delete_file($upload['file']);
-        if (is_wp_error($unzipped)) {
-            self::redirect_notice([$unzipped->get_error_message()], 'error');
+        if (!$extracted) {
+            self::redirect_notice(['The archive could not be unpacked into wp-content/uploads/kennys-korner-seed/.'], 'error');
+        }
+        if (!self::tree_stays_inside($dest)) {
+            self::redirect_notice(['The archive was rejected because a file resolved outside the seed folder.'], 'error');
         }
         self::strip_executable_files($dest);
         if (kk_seed_dir() === '') {
             self::redirect_notice(['The zip unpacked, but the images or menu folder was not inside it.'], 'error');
         }
         self::redirect_notice(['Seed files are ready to import.']);
+    }
+
+    private static function zip_rejection_reason(string $file): string {
+        if (!class_exists('ZipArchive')) {
+            return 'ZipArchive is not available, so an uploaded zip cannot be unpacked. Unzip kennys-korner-seed.zip with the host File Manager or SFTP into wp-content/uploads/kennys-korner-seed/ and leave the inner seed folder in place.';
+        }
+        $zip = new ZipArchive();
+        if ($zip->open($file) !== true) {
+            return 'The file is not a readable zip archive.';
+        }
+        for ($index = 0; $index < $zip->numFiles; $index++) {
+            $name = str_replace('\\', '/', (string) $zip->getNameIndex($index));
+            $blocked = $name === ''
+                || str_contains($name, "\0")
+                || str_starts_with($name, '/')
+                || preg_match('#(^|/)\.\.(/|$)#', $name) === 1
+                || preg_match('/(^|\/)\.htaccess$/i', $name) === 1
+                || preg_match('/\.(php|phtml|phar)$/i', $name) === 1;
+            if ($blocked) {
+                $zip->close();
+                return 'The archive contains a path that is not allowed.';
+            }
+        }
+        $zip->close();
+        return '';
+    }
+
+    private static function tree_stays_inside(string $dir): bool {
+        $root = realpath($dir);
+        if ($root === false) {
+            return false;
+        }
+        $prefix = rtrim($root, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS));
+        foreach ($iterator as $file) {
+            if (!$file instanceof SplFileInfo) {
+                continue;
+            }
+            $real = realpath($file->getPathname());
+            if ($real === false || ($real !== $root && !str_starts_with($real, $prefix))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static function strip_executable_files(string $dir): void {

@@ -150,6 +150,7 @@ function kk_sanitize_repeater(array $field, $raw, string $label, array &$errors)
             continue;
         }
         $item = kk_sanitize_fields($field['fields'], $row, $label, $errors);
+        $item = kk_normalize_video_item($item);
         $id = kk_clean_token(str_replace('_', '-', (string) ($row['_id'] ?? '')));
         if ($id === '') {
             $id = 'row-' . wp_generate_password(8, false, false);
@@ -164,49 +165,55 @@ function kk_sanitize_repeater(array $field, $raw, string $label, array &$errors)
     return $items;
 }
 
+function kk_repeater_token(array $item, string $index): string {
+    $id = kk_clean_token(str_replace('_', '-', (string) ($item['_id'] ?? '')));
+    return $id !== '' ? $id : $index;
+}
+
 function kk_render_screen(array $screen, array $sections, array $page_fields): void {
     if (!empty($screen['page_fields'])) {
-        echo '<div class="kk-card"><h2>Page</h2>';
-        kk_render_fields($screen['page_fields'], $page_fields, 'kk[_page]');
+        echo '<div class="kk-card" data-kk-path="_page"><h2>Page</h2>';
+        kk_render_fields($screen['page_fields'], $page_fields, 'kk[_page]', '_page');
         echo '</div>';
     }
     foreach ($screen['sections'] as $section) {
         $values = $sections[$section['id']] ?? [];
-        echo '<div class="kk-card">';
+        echo '<div class="kk-card" data-kk-path="' . esc_attr($section['id']) . '">';
         echo '<h2>' . esc_html($section['title']) . '</h2>';
         if (!empty($section['description'])) {
             echo '<p class="description">' . esc_html($section['description']) . '</p>';
         }
-        kk_render_fields($section['fields'], is_array($values) ? $values : [], 'kk[' . $section['id'] . ']');
+        kk_render_fields($section['fields'], is_array($values) ? $values : [], 'kk[' . $section['id'] . ']', $section['id']);
         echo '</div>';
     }
 }
 
-function kk_render_fields(array $fields, array $values, string $prefix): void {
+function kk_render_fields(array $fields, array $values, string $prefix, string $path = ''): void {
     foreach ($fields as $field) {
         $name = $field['name'];
+        $child = $path === '' ? $name : $path . '.' . $name;
         $value = $values[$name] ?? null;
-        kk_render_field($field, $value, $prefix . '[' . $name . ']');
+        kk_render_field($field, $value, $prefix . '[' . $name . ']', $child);
     }
 }
 
-function kk_render_field(array $field, $value, string $name): void {
+function kk_render_field(array $field, $value, string $name, string $path = ''): void {
     $type = $field['type'];
     if ($type === 'headline') {
-        kk_render_headline($field, is_array($value) ? $value : [], $name);
+        kk_render_headline($field, is_array($value) ? $value : [], $name, $path);
         return;
     }
     if ($type === 'repeater') {
-        kk_render_repeater($field, is_array($value) ? $value : [], $name);
+        kk_render_repeater($field, is_array($value) ? $value : [], $name, $path);
         return;
     }
     if ($type === 'link') {
-        echo '<fieldset class="kk-link"><legend>' . esc_html($field['label']) . '</legend>';
-        kk_render_fields($field['fields'], is_array($value) ? $value : [], $name);
+        echo '<fieldset class="kk-link" data-kk-path="' . esc_attr($path) . '" data-kk-kind="link"><legend>' . esc_html($field['label']) . '</legend>';
+        kk_render_fields($field['fields'], is_array($value) ? $value : [], $name, $path);
         echo '</fieldset>';
         return;
     }
-    echo '<div class="kk-field">';
+    echo '<div class="kk-field" data-kk-path="' . esc_attr($path) . '" data-kk-kind="' . esc_attr($type) . '">';
     if ($type === 'image' || $type === 'file') {
         kk_render_media($field, is_array($value) ? $value : [], $name);
         kk_render_help($field);
@@ -256,15 +263,18 @@ function kk_render_media(array $field, array $value, string $name): void {
     }
     $asset = $id ? '' : (string) ($value['asset'] ?? '');
     $library = (string) ($field['library'] ?? 'image');
+    $stored_id = $id && get_post_type($id) === 'attachment' ? $id : 0;
+    $kind = function_exists('kk_attachment_mime_kind') ? kk_attachment_mime_kind($stored_id) : '';
     echo '<div class="kk-media" data-library="' . esc_attr($library) . '">';
-    echo '<input class="kk-media-id" type="hidden" name="' . esc_attr($name) . '[id]" value="' . esc_attr((string) ($id && get_post_type($id) === 'attachment' ? $id : 0)) . '">';
+    echo '<strong class="kk-media-label">' . esc_html($field['label']) . '</strong>';
+    echo '<input class="kk-media-id" type="hidden" name="' . esc_attr($name) . '[id]" value="' . esc_attr((string) $stored_id) . '">';
     echo '<input class="kk-media-asset" type="hidden" name="' . esc_attr($name) . '[asset]" value="' . esc_attr($asset) . '">';
     echo '<div class="kk-media-preview">';
-    if ($id && get_post_type($id) === 'attachment') {
-        if (wp_attachment_is_image($id)) {
-            echo wp_get_attachment_image($id, 'thumbnail');
+    if ($stored_id) {
+        if ($kind === 'image') {
+            echo wp_get_attachment_image($stored_id, 'thumbnail');
         } else {
-            echo '<span>' . esc_html(basename((string) get_attached_file($id))) . '</span>';
+            echo '<span>' . esc_html(basename((string) get_attached_file($stored_id))) . '</span>';
         }
     } elseif ($asset !== '') {
         echo '<span>Demo file: ' . esc_html($asset) . '</span>';
@@ -273,18 +283,22 @@ function kk_render_media(array $field, array $value, string $name): void {
     }
     echo '</div>';
     echo '<p class="kk-media-actions">';
-    echo '<button type="button" class="button kk-media-select">' . esc_html($id ? 'Replace' : 'Select') . '</button> ';
+    echo '<button type="button" class="button kk-media-select">' . esc_html($stored_id ? 'Replace' : 'Select') . '</button> ';
     echo '<button type="button" class="button-link-delete kk-media-remove">Remove</button>';
     echo '</p>';
-    echo '<strong>' . esc_html($field['label']) . '</strong>';
+    if ($library === 'image' && $kind === 'video') {
+        echo '<p class="kk-media-note">This file is a video, so it is not used as the poster. Choose an image.</p>';
+    } elseif ($library === 'video' && $stored_id && $kind !== 'video') {
+        echo '<p class="kk-media-note">This file is not a video. Choose an MP4 or WebM file.</p>';
+    }
     if (!empty($field['with_alt'])) {
         echo '<label class="kk-alt"><span>Alt text</span><input type="text" name="' . esc_attr($name) . '[alt]" value="' . esc_attr((string) ($value['alt'] ?? '')) . '"></label>';
     }
     echo '</div>';
 }
 
-function kk_render_headline(array $field, array $lines, string $name): void {
-    echo '<div class="kk-field">';
+function kk_render_headline(array $field, array $lines, string $name, string $path = ''): void {
+    echo '<div class="kk-field" data-kk-path="' . esc_attr($path) . '" data-kk-kind="headline">';
     echo '<span class="kk-label">' . esc_html($field['label']) . '</span>';
     kk_render_help($field);
     $blank = ['before' => '', 'accent' => '', 'after' => ''];
@@ -312,18 +326,18 @@ function kk_render_headline_row(string $name, string $index, array $line): void 
     echo '</div>';
 }
 
-function kk_render_repeater(array $field, array $items, string $name): void {
-    echo '<div class="kk-field kk-repeater-field">';
+function kk_render_repeater(array $field, array $items, string $name, string $path = ''): void {
+    echo '<div class="kk-field kk-repeater-field" data-kk-path="' . esc_attr($path) . '" data-kk-kind="repeater">';
     echo '<span class="kk-label">' . esc_html($field['label']) . '</span>';
     kk_render_help($field);
     echo '<div class="kk-repeater">';
     echo '<div class="kk-repeater-list">';
     foreach (array_values($items) as $index => $item) {
-        kk_render_repeater_item($field, $name, (string) $index, is_array($item) ? $item : []);
+        kk_render_repeater_item($field, $name, (string) $index, is_array($item) ? $item : [], $path);
     }
     echo '</div>';
     echo '<template>';
-    kk_render_repeater_item($field, $name, '__i__', ['_id' => '']);
+    kk_render_repeater_item($field, $name, '__i__', ['_id' => '__id__'], $path);
     echo '</template>';
     $empty = $items === [];
     echo '<p class="kk-empty"' . ($empty ? '' : ' hidden') . '>Nothing here yet. Add the first ' . esc_html(strtolower($field['item_label'])) . '.</p>';
@@ -331,14 +345,16 @@ function kk_render_repeater(array $field, array $items, string $name): void {
     echo '</div></div>';
 }
 
-function kk_render_repeater_item(array $field, string $name, string $index, array $item): void {
-    echo '<div class="kk-repeater-item">';
+function kk_render_repeater_item(array $field, string $name, string $index, array $item, string $path = ''): void {
+    $token = kk_repeater_token($item, $index);
+    $item_path = $path === '' ? $token : $path . '#' . $token;
+    echo '<div class="kk-repeater-item" data-kk-path="' . esc_attr($item_path) . '" data-kk-id="' . esc_attr($token) . '">';
     echo '<div class="kk-repeater-bar">';
     echo '<button type="button" class="kk-drag" aria-label="Drag to reorder">↕</button>';
     echo '<strong>' . esc_html($field['item_label']) . '</strong>';
     echo '<button type="button" class="button-link-delete kk-repeater-remove">Remove</button>';
     echo '</div>';
     echo '<input type="hidden" name="' . esc_attr($name . '[' . $index . '][_id]') . '" value="' . esc_attr((string) ($item['_id'] ?? '')) . '">';
-    kk_render_fields($field['fields'], $item, $name . '[' . $index . ']');
+    kk_render_fields($field['fields'], $item, $name . '[' . $index . ']', $item_path);
     echo '</div>';
 }

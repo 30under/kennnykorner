@@ -14,13 +14,21 @@
   transform: none;
 }
 
-body.admin-bar .site-header {
-  top: 32px;
+.kk-plugin-missing {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: #f4e2b2;
+  color: #1d3140;
+  font: 600 0.95rem/1.4 "DM Sans", sans-serif;
+}
+
+body.admin-bar {
+  --kk-sticky-top: var(--wp-admin--admin-bar--height, 32px);
 }
 
 @media screen and (max-width: 782px) {
-  body.admin-bar .site-header {
-    top: 46px;
+  body.admin-bar {
+    --kk-sticky-top: var(--wp-admin--admin-bar--height, 46px);
   }
 }
 
@@ -50,8 +58,7 @@ body.admin-bar .menu-lightbox {
 }
 
 .visit-details .kk-address,
-.visit-card .kk-address,
-.kk-contact {
+.visit-card .kk-address {
   display: block;
 }
 
@@ -78,4 +85,14 @@ body.admin-bar .menu-lightbox {
 
 .kk-generic-content > *:first-child {
   margin-top: 0;
+}
+
+body.kk-live-editor [data-kk-edit] {
+  cursor: pointer;
+}
+
+body.kk-live-editor [data-kk-edit]:hover,
+body.kk-live-editor [data-kk-edit].is-kk-selected {
+  outline: 2px solid #0f4c81;
+  outline-offset: 3px;
 }

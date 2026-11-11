@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Kenny's Korner Core
  * Description: Content model, editing screens, and demo importer for the Kenny's Korner website.
- * Version: 1.0.0
+ * Version: 1.3.1
  * Requires at least: 6.4
  * Tested up to: 7.1
  * Requires PHP: 8.0
@@ -16,11 +16,11 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('KK_CORE_VERSION', '1.0.0');
+define('KK_CORE_VERSION', '1.3.1');
 define('KK_CORE_FILE', __FILE__);
 define('KK_CORE_DIR', plugin_dir_path(__FILE__));
 define('KK_CORE_URL', plugin_dir_url(__FILE__));
-define('KK_SCHEMA_VERSION', 1);
+define('KK_SCHEMA_VERSION', 2);
 
 require_once KK_CORE_DIR . 'includes/content.php';
 require_once KK_CORE_DIR . 'includes/schema.php';
@@ -28,6 +28,7 @@ require_once KK_CORE_DIR . 'includes/fields.php';
 require_once KK_CORE_DIR . 'includes/admin.php';
 require_once KK_CORE_DIR . 'includes/importer.php';
 require_once KK_CORE_DIR . 'includes/system.php';
+require_once KK_CORE_DIR . 'includes/catering.php';
 
 register_activation_hook(KK_CORE_FILE, 'kk_activate');
 register_deactivation_hook(KK_CORE_FILE, 'kk_deactivate');
@@ -35,6 +36,8 @@ add_action('plugins_loaded', 'kk_boot');
 
 function kk_boot(): void {
     kk_maybe_upgrade_schema();
+    kk_fill_blank_contact_settings();
+    kk_repair_stored_video_fields();
     KK_Admin::init();
     KK_Importer::init();
     if (defined('WP_CLI') && WP_CLI) {
@@ -45,6 +48,9 @@ function kk_boot(): void {
 
 function kk_activate(): void {
     kk_maybe_upgrade_schema();
+    kk_fill_blank_contact_settings();
+    kk_repair_stored_video_fields();
+    kk_ensure_catering();
     flush_rewrite_rules();
 }
 
