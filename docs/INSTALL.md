@@ -38,6 +38,8 @@ Importer không đè permalink đang dùng, không đè menu chính đã gán, v
 
 Schema hiện tại là phiên bản 2. Nâng cấp theme/plugin không ghi đè nội dung đã lưu. Lần chạy đầu sau bản 1.2.0 chỉ tạo trang Catering nếu chưa có, và thêm mục Catering vào menu chính nếu mục đó chưa tồn tại.
 
+Form Catering gửi qua `wp_mail()`. Cài một plugin SMTP và nhập thông tin máy chủ do nhà cung cấp email cấp. Plugin Kenny's Korner không lưu mật khẩu SMTP. Sau khi cấu hình, vào Kenny's Korner → Setup và bấm Send test email.
+
 ## Rollback
 
 Giữ zip bản đang chạy. Khi cần lùi: upload lại đúng hai zip đó. Nội dung khách đã sửa vẫn nằm trong database. Rollback code không hoàn tác một lần import có `REPLACE DEMO CONTENT`. Muốn hoàn tác nội dung, dùng bản sao lưu database.

@@ -62,7 +62,9 @@ $invalid = static function (string $key) use ($errors): string {
         <input id="kk-company" type="text" name="kk_company" tabindex="-1" autocomplete="off" value="">
       </div>
       <?php if ($state['status'] === 'sent') : ?>
-        <p class="catering-notice catering-notice--ok" role="status">Thanks. We received your catering request and will reply by email.</p>
+        <p class="catering-notice catering-notice--ok" role="status">Thanks. We received your catering request and will contact you. This is not a confirmation of the booking.</p>
+      <?php elseif ($state['status'] === 'partial') : ?>
+        <p class="catering-notice catering-notice--ok" role="status">We received your catering request and will contact you. The confirmation email could not be sent, so you do not need to submit the form again. This is not a confirmation of the booking.</p>
       <?php elseif ($state['status'] === 'unavailable' || !$ready) : ?>
         <p class="catering-notice catering-notice--bad" role="alert">This form is not ready yet. Please contact the restaurant directly.</p>
       <?php elseif ($state['status'] === 'error') : ?>

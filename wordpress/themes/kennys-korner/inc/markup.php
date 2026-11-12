@@ -163,7 +163,7 @@ function kk_timeline_icon(string $name): void {
     echo '<svg viewBox="0 0 48 48" aria-hidden="true">' . $markup . '</svg>';
 }
 
-function kk_action_link(array $link, string $edit = '', string $owner = '', string $label_edit = ''): void {
+function kk_action_link(array $link, string $edit = '', string $owner = '', string $label_edit = '', array $options = []): void {
     if (!function_exists('kk_resolve_link')) {
         return;
     }
@@ -172,20 +172,28 @@ function kk_action_link(array $link, string $edit = '', string $owner = '', stri
     if ($href === '' || $resolved['label'] === '') {
         return;
     }
+    $hero = !empty($options['hero']);
     $style = in_array($resolved['style'], ['primary', 'secondary', 'light'], true) ? $resolved['style'] : 'primary';
-    echo '<a class="action-link action-link--' . esc_attr($style) . '" href="' . $href . '"' . kk_edit($edit, $owner, false);
+    $class = $hero ? 'action-link hero-action' : 'action-link action-link--' . $style;
+    echo '<a class="' . esc_attr($class) . '" href="' . $href . '"' . kk_edit($edit, $owner, false);
     if ($resolved['new_tab']) {
         echo ' target="_blank" rel="noopener noreferrer"';
     }
     echo '>';
-    if ($resolved['icon'] !== '' && $resolved['icon'] !== 'none') {
+    if (!$hero && $resolved['icon'] !== '' && $resolved['icon'] !== 'none') {
         echo '<span class="action-link-icon">';
         kk_icon($resolved['icon']);
         echo '</span>';
     }
     $label_path = $label_edit !== '' ? $label_edit : ($edit !== '' ? $edit . '.label' : '');
     echo '<span' . kk_edit($label_path, $owner) . '>' . esc_html($resolved['label']) . '</span>';
-    kk_icon('arrow');
+    if ($hero) {
+        echo '<span class="action-link-icon" aria-hidden="true">';
+        kk_icon('arrow');
+        echo '</span>';
+    } else {
+        kk_icon('arrow');
+    }
     echo '</a>';
 }
 

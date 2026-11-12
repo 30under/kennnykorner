@@ -68,6 +68,12 @@ function kk_system_checks(): array {
         'status' => $missing === [] ? 'OK' : 'Check',
         'detail' => $missing === [] ? 'Home, Menu, Gallery, Our Story, and Visit Us exist.' : 'Missing: ' . implode(', ', $missing),
     ];
+    $store_email = function_exists('kk_store_email') ? kk_store_email() : '';
+    $checks[] = [
+        'label' => 'Restaurant email',
+        'status' => $store_email !== '' ? 'OK' : 'Fix',
+        'detail' => $store_email !== '' ? 'Saved in General settings. Catering requests can be sent.' : 'Missing. Add it in General settings. The catering form stays unavailable.',
+    ];
     $upload = wp_max_upload_size();
     $checks[] = [
         'label' => 'Upload limit',

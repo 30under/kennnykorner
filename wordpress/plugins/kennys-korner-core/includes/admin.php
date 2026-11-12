@@ -454,6 +454,19 @@ final class KK_Admin {
             echo '<tr><td>' . esc_html($item['item']) . '</td><td>' . esc_html($item['demo']) . '</td><td>' . esc_html($item['note']) . '</td></tr>';
         }
         echo '</tbody></table></div>';
+        echo '<div class="kk-card"><h2>Email delivery</h2>';
+        echo '<p>Catering uses <code>wp_mail()</code>. Install an SMTP plugin and enter the host, port, username, and password supplied by the mailbox provider. This plugin does not store those credentials and does not create a Gmail account or an app password.</p>';
+        echo '<p>WP Mail SMTP, FluentSMTP, and Post SMTP can all deliver mail that Kenny\'s Korner sends. After the plugin is connected, send the test below. The result only says whether WordPress accepted the message.</p>';
+        if (kk_store_email() === '') {
+            echo '<div class="notice notice-warning inline"><p>Add the restaurant email in Kenny\'s Korner → General settings. The catering form stays unavailable until that address is saved.</p></div>';
+        } else {
+            echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
+            wp_nonce_field('kk_mail_test');
+            echo '<input type="hidden" name="action" value="kk_mail_test">';
+            echo '<button class="button">Send test email</button></form>';
+            echo '<p class="description">The test goes to the restaurant email in General settings.</p>';
+        }
+        echo '</div>';
         echo '<div class="kk-card"><h2>Import demo content</h2>';
         echo '<p>This creates the pages, menu, and media that are missing. It does not replace content you have already saved, and it does not run by itself when the plugin is activated.</p>';
         echo '<p><label><input type="checkbox" id="kk-overwrite"> Replace Kenny\'s Korner demo content</label></p>';

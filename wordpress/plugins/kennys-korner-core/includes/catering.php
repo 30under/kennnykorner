@@ -1,8 +1,10 @@
 <?php
 
 add_action('init', 'kk_ensure_catering', 20);
+add_action('admin_notices', 'kk_catering_email_admin_notice');
 add_action('admin_post_nopriv_kk_catering_request', 'kk_handle_catering_request');
 add_action('admin_post_kk_catering_request', 'kk_handle_catering_request');
+add_action('admin_post_kk_mail_test', 'kk_handle_mail_test');
 
 function kk_ensure_catering(): void {
     if (!function_exists('kk_default_content')) {
@@ -109,7 +111,7 @@ function kk_ensure_catering_menu_item(int $page_id): void {
 
 function kk_catering_request_state(): array {
     $status = isset($_GET['kk_form']) ? sanitize_key(wp_unslash($_GET['kk_form'])) : '';
-    if (!in_array($status, ['sent', 'invalid', 'error', 'unavailable'], true)) {
+    if (!in_array($status, ['sent', 'partial', 'invalid', 'error', 'unavailable'], true)) {
         $status = '';
     }
     $ref = isset($_GET['kk_ref']) ? sanitize_key(wp_unslash($_GET['kk_ref'])) : '';
@@ -124,43 +126,119 @@ function kk_catering_request_state(): array {
 
 function kk_handle_catering_request(): void {
     $return = kk_catering_return_url();
-    $nonce = isset($_POST['kk_catering_nonce']) ? sanitize_text_field(wp_unslash($_POST['kk_catering_nonce'])) : '';
-    if (!wp_verify_nonce($nonce, 'kk_catering_request')) {
-        kk_catering_redirect($return, 'error');
+    $result = kk_catering_process(wp_unslash($_POST));
+    if ($result['status'] === 'invalid') {
+        $ref = strtolower(wp_generate_password(12, false, false));
+        set_transient('kk_catering_' . $ref, [
+            'errors' => $result['errors'],
+            'values' => $result['values'],
+        ], 15 * MINUTE_IN_SECONDS);
+        kk_catering_redirect($return, 'invalid', $ref);
     }
-    $honeypot = isset($_POST['kk_company']) ? trim((string) wp_unslash($_POST['kk_company'])) : '';
+    kk_catering_redirect($return, $result['status']);
+}
+
+function kk_catering_process(array $post): array {
+    $empty = ['status' => 'error', 'errors' => [], 'values' => []];
+    $nonce = isset($post['kk_catering_nonce']) ? sanitize_text_field((string) $post['kk_catering_nonce']) : '';
+    if (!wp_verify_nonce($nonce, 'kk_catering_request')) {
+        return $empty;
+    }
+    $honeypot = isset($post['kk_company']) ? trim((string) $post['kk_company']) : '';
     if ($honeypot !== '') {
-        kk_catering_redirect($return, 'sent');
+        return ['status' => 'sent', 'errors' => [], 'values' => []];
     }
     $rate_key = 'kk_cat_rate_' . md5(kk_catering_client_key());
     $hits = (int) get_transient($rate_key);
     if ($hits >= 5) {
-        kk_catering_redirect($return, 'error');
+        return $empty;
     }
-    if (kk_store_email() === '') {
-        kk_catering_redirect($return, 'unavailable');
-    }
-    $values = kk_catering_submitted_values();
+    $values = kk_catering_values_from($post);
     $errors = kk_catering_validate($values);
     if ($errors !== []) {
-        $ref = strtolower(wp_generate_password(12, false, false));
-        set_transient('kk_catering_' . $ref, [
-            'errors' => $errors,
-            'values' => $values,
-        ], 15 * MINUTE_IN_SECONDS);
-        kk_catering_redirect($return, 'invalid', $ref);
+        return ['status' => 'invalid', 'errors' => $errors, 'values' => $values];
+    }
+    $status = kk_catering_send($values, kk_store_email());
+    if ($status === 'sent' || $status === 'partial') {
+        set_transient($rate_key, $hits + 1, HOUR_IN_SECONDS);
+    }
+    return ['status' => $status, 'errors' => [], 'values' => []];
+}
+
+function kk_catering_send(array $values, string $restaurant): string {
+    $restaurant = sanitize_email($restaurant);
+    $guest = sanitize_email((string) ($values['email'] ?? ''));
+    if (!is_email($restaurant)) {
+        return 'unavailable';
+    }
+    if (!is_email($guest)) {
+        return 'error';
+    }
+    $notified = wp_mail(
+        $restaurant,
+        kk_catering_mail_subject((string) $values['name']),
+        kk_catering_mail_body($values),
+        kk_catering_mail_headers((string) $values['name'], $guest)
+    );
+    if (!$notified) {
+        return 'error';
+    }
+    $confirmed = wp_mail(
+        $guest,
+        kk_catering_guest_subject(),
+        kk_catering_guest_body($values),
+        kk_catering_guest_headers($restaurant)
+    );
+    return $confirmed ? 'sent' : 'partial';
+}
+
+function kk_catering_email_admin_notice(): void {
+    if (!current_user_can('edit_pages') || kk_store_email() !== '') {
+        return;
+    }
+    $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+    $page = isset($_GET['page']) ? sanitize_key(wp_unslash($_GET['page'])) : '';
+    $on_plugin = ($screen && $screen->id === 'dashboard') || str_starts_with($page, 'kk-');
+    if (!$on_plugin) {
+        return;
+    }
+    echo '<div class="notice notice-warning"><p>The restaurant email is empty, so the catering form is unavailable. Add it in Kenny\'s Korner → General settings.</p></div>';
+}
+
+function kk_handle_mail_test(): void {
+    if (!current_user_can('manage_options')) {
+        wp_die(esc_html__('Sorry, you are not allowed to send a test email.', 'kennys-korner-core'));
+    }
+    check_admin_referer('kk_mail_test');
+    $result = kk_send_test_email();
+    $type = $result === 'sent' ? 'success' : 'error';
+    $messages = [
+        'sent' => 'WordPress accepted the test message for the restaurant email in General settings.',
+        'missing' => 'Add the restaurant email in General settings before sending a test.',
+        'error' => 'WordPress could not send the test message. Check the SMTP plugin. No mailbox password is shown here.',
+    ];
+    set_transient('kk_notice_' . get_current_user_id(), [
+        'type' => $type,
+        'messages' => [$messages[$result] ?? $messages['error']],
+    ], 60);
+    wp_safe_redirect(admin_url('admin.php?page=kk-setup'));
+    exit;
+}
+
+function kk_send_test_email(): string {
+    if (!current_user_can('manage_options')) {
+        return 'forbidden';
+    }
+    $to = kk_store_email();
+    if ($to === '') {
+        return 'missing';
     }
     $sent = wp_mail(
-        kk_store_email(),
-        kk_catering_mail_subject($values['name']),
-        kk_catering_mail_body($values),
-        kk_catering_mail_headers($values['name'], $values['email'])
+        $to,
+        "Kenny's Korner email test",
+        "This is a test message from Kenny's Korner.\nNo catering request was submitted.\n"
     );
-    if (!$sent) {
-        kk_catering_redirect($return, 'error');
-    }
-    set_transient($rate_key, $hits + 1, HOUR_IN_SECONDS);
-    kk_catering_redirect($return, 'sent');
+    return $sent ? 'sent' : 'error';
 }
 
 function kk_catering_return_url(): string {
@@ -184,7 +262,10 @@ function kk_catering_client_key(): string {
 }
 
 function kk_catering_submitted_values(): array {
-    $source = wp_unslash($_POST);
+    return kk_catering_values_from(wp_unslash($_POST));
+}
+
+function kk_catering_values_from(array $source): array {
     $date = isset($source['event_date']) ? sanitize_text_field((string) $source['event_date']) : '';
     $time = isset($source['event_time']) ? sanitize_text_field((string) $source['event_time']) : '';
     return [
@@ -241,13 +322,55 @@ function kk_catering_mail_subject(string $name): string {
 }
 
 function kk_catering_mail_headers(string $name, string $email): array {
-    $name = trim(str_replace(["\r", "\n", '<', '>', ',', ';'], ' ', $name));
-    $email = sanitize_email($email);
     $headers = ['Content-Type: text/plain; charset=UTF-8'];
-    if (is_email($email)) {
-        $headers[] = 'Reply-To: ' . ($name !== '' ? $name . ' ' : '') . '<' . $email . '>';
+    $reply = kk_catering_address_header($email, $name);
+    if ($reply !== '') {
+        $headers[] = 'Reply-To: ' . $reply;
     }
     return $headers;
+}
+
+function kk_catering_guest_subject(): string {
+    return 'We received your catering request';
+}
+
+function kk_catering_guest_headers(string $restaurant): array {
+    $headers = ['Content-Type: text/plain; charset=UTF-8'];
+    $reply = kk_catering_address_header($restaurant, "Kenny's Korner");
+    if ($reply !== '') {
+        $headers[] = 'Reply-To: ' . $reply;
+    }
+    return $headers;
+}
+
+function kk_catering_guest_body(array $values): string {
+    $lines = [
+        'Hello ' . $values['name'] . ',',
+        '',
+        "Kenny's Korner received your catering request and will contact you.",
+        '',
+        'This message is not a confirmation of the booking.',
+        '',
+        'Name: ' . $values['name'],
+        'Email: ' . $values['email'],
+        'Phone: ' . $values['phone'],
+        'Event date: ' . $values['event_date'],
+        'Event time: ' . ($values['event_time'] !== '' ? $values['event_time'] : 'Not given'),
+        'Guests: ' . (string) $values['guests'],
+        '',
+        'Notes:',
+        $values['notes'] !== '' ? $values['notes'] : 'None',
+    ];
+    return implode("\n", $lines);
+}
+
+function kk_catering_address_header(string $email, string $name = ''): string {
+    $email = sanitize_email($email);
+    $name = trim(str_replace(["\r", "\n", '<', '>', ',', ';', '"'], ' ', $name));
+    if (!is_email($email)) {
+        return '';
+    }
+    return $name !== '' ? $name . ' <' . $email . '>' : $email;
 }
 
 function kk_catering_mail_body(array $values): string {

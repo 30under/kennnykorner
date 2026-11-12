@@ -22,19 +22,20 @@ $directions = (string) ($general['directions_url'] ?? '');
       <?php kk_paragraphs((string) ($hero['description'] ?? ''), 'hero-description', 'hero.description'); ?>
       <div class="hero-actions">
         <?php foreach (array_values($hero['actions'] ?? []) as $index => $action) : ?>
-          <?php kk_action_link(is_array($action) ? $action : [], kk_item_path('hero.actions', is_array($action) ? $action : [], $index)); ?>
+          <?php kk_action_link(is_array($action) ? $action : [], kk_item_path('hero.actions', is_array($action) ? $action : [], $index), '', '', ['hero' => true]); ?>
         <?php endforeach; ?>
         <?php
         $catering_id = function_exists('kk_find_page_id') ? kk_find_page_id('catering') : 0;
         $catering_page = $catering_id ? kk_content_page('catering') : [];
         $catering_label = trim((string) ($catering_page['request']['home_label'] ?? ''));
-        if ($catering_id && get_post_status($catering_id) === 'publish' && $catering_label !== '') :
-            ?>
-          <a class="action-link action-link--secondary" href="<?php echo esc_url(get_permalink($catering_id)); ?>">
-            <span><?php echo esc_html($catering_label); ?></span>
-            <span class="action-link-icon" aria-hidden="true"><?php kk_icon('arrow'); ?></span>
-          </a>
-        <?php endif; ?>
+        if ($catering_id && get_post_status($catering_id) === 'publish' && $catering_label !== '') {
+            kk_action_link([
+                'preset' => 'custom',
+                'url' => get_permalink($catering_id),
+                'label' => $catering_label,
+            ], '', '', '', ['hero' => true]);
+        }
+        ?>
       </div>
       <?php if (!empty($hero['fresh_note'])) : ?>
         <p class="hero-fresh-note"<?php echo kk_edit('hero.fresh_note'); ?>><?php echo esc_html($hero['fresh_note']); ?></p>
